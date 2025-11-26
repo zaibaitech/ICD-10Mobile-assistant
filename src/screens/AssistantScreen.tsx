@@ -7,15 +7,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChatMessage } from '../components/ChatMessage';
 import { ChatInput } from '../components/ChatInput';
 import { RuleSuggestionCard } from '../components/RuleSuggestionCard';
+import { ImageAttachment } from '../components/ImageAttachment';
 import { useVisitContext } from '../context/VisitContext';
 import { getAssistantReply, transcribeAudio } from '../services/assistant';
 import { getRuleSuggestions } from '../services/rules';
 import { logAssistantInteraction } from '../services/logging';
+import { uploadImage } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { ChatMessage as ChatMessageType, SuggestedCode, RuleSuggestion } from '../types';
 
@@ -35,6 +38,7 @@ export const AssistantScreen: React.FC = () => {
   const [ruleSuggestions, setRuleSuggestions] = useState<RuleSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   
   const flatListRef = useRef<FlatList>(null);
 
@@ -54,10 +58,28 @@ export const AssistantScreen: React.FC = () => {
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || !user) return;
 
+    let imageUrl: string | undefined;
+
+    // Upload pending image if exists
+    if (pendingImage) {
+      try {
+        imageUrl = await uploadImage(pendingImage, user.id);
+        setPendingImage(null);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        Alert.alert(
+          t('errors.imageUploadTitle'),
+          t('errors.imageUploadMessage')
+        );
+        return;
+      }
+    }
+
     const userMessage: ChatMessageType = {
       id: Date.now().toString(),
       role: 'user',
       text: text.trim(),
+      imageUrl,
       timestamp: new Date(),
     };
 
@@ -68,6 +90,7 @@ export const AssistantScreen: React.FC = () => {
       // Get assistant response
       const response = await getAssistantReply(text.trim(), {
         currentVisitCodes: visitCodes,
+        imageUrl,
       });
 
       const assistantMessage: ChatMessageType = {
@@ -179,6 +202,17 @@ export const AssistantScreen: React.FC = () => {
         <Text style={styles.disclaimerText}>{t('assistant.disclaimer')}</Text>
       </View>
       
+      {pendingImage && (
+        <View style={styles.pendingImageContainer}>
+          <Text style={styles.pendingImageLabel}>{t('attachments.pendingImage')}</Text>
+          <ImageAttachment
+            uri={pendingImage}
+            tags={[]}
+            onRemove={() => setPendingImage(null)}
+          />
+        </View>
+      )}
+      
       {ruleSuggestions.length > 0 && (
         <View style={styles.ruleSuggestionsContainer}>
           <Text style={styles.ruleSuggestionsTitle}>
@@ -221,6 +255,7 @@ export const AssistantScreen: React.FC = () => {
 
       <ChatInput
         onSend={handleSendMessage}
+        onImageSelected={setPendingImage}
         onVoiceRecordingComplete={handleVoiceRecording}
         isLoading={isLoading}
         isRecording={isRecording}
@@ -251,6 +286,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#856404',
     lineHeight: 18,
+  },
+  pendingImageContainer: {
+    padding: 12,
+    marginHorizontal: 12,
+    marginVertical: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+  },
+  pendingImageLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
   },
   ruleSuggestionsContainer: {
     marginVertical: 8,

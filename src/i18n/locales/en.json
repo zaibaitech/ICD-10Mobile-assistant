@@ -116,6 +116,12 @@
     }
   },
   "attachments": {
+    "selectSource": "Select Image Source",
+    "camera": "Take Photo",
+    "gallery": "Choose from Gallery",
+    "pendingImage": "Image to send:",
+    "removeTitle": "Remove Image",
+    "removeMessage": "Are you sure you want to remove this image?",
     "selectTag": "Select Tag",
     "tags": {
       "skin": "Skin",
@@ -128,5 +134,19 @@
     "filterICD10": "Filter ICD-10 for {{category}}",
     "noAttachments": "No attachments",
     "removeAttachment": "Remove attachment"
+  },
+  "permissions": {
+    "cameraTitle": "Camera Permission Required",
+    "cameraMessage": "Please allow camera access to take photos",
+    "mediaLibraryTitle": "Photo Library Permission Required",
+    "mediaLibraryMessage": "Please allow photo library access to select images"
+  },
+  "errors": {
+    "imagePickerTitle": "Image Selection Error",
+    "imagePickerMessage": "Failed to select image. Please try again.",
+    "cameraTitle": "Camera Error",
+    "cameraMessage": "Failed to take photo. Please try again.",
+    "imageUploadTitle": "Upload Error",
+    "imageUploadMessage": "Failed to upload image. Please try again."
   }
 }

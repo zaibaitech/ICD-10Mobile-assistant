@@ -71,7 +71,7 @@
   "visit": {
     "title": "Note de visite",
     "empty": "Aucun diagnostic ajouté",
-    "addCodes": "Recherchez et ajoutez des codes CIM-10 pour créer votre note de visite",
+    "addCodes": "Rechercher et ajouter des codes CIM-10 pour créer votre note de visite",
     "diagnoses": "Diagnostics",
     "copyNote": "Copier la note",
     "clearVisit": "Effacer la visite",
@@ -116,6 +116,12 @@
     }
   },
   "attachments": {
+    "selectSource": "Sélectionner la source de l'image",
+    "camera": "Prendre une photo",
+    "gallery": "Choisir depuis la galerie",
+    "pendingImage": "Image à envoyer:",
+    "removeTitle": "Supprimer l'image",
+    "removeMessage": "Êtes-vous sûr de vouloir supprimer cette image?",
     "selectTag": "Sélectionner une étiquette",
     "tags": {
       "skin": "Peau",
@@ -128,5 +134,19 @@
     "filterICD10": "Filtrer CIM-10 pour {{category}}",
     "noAttachments": "Aucune pièce jointe",
     "removeAttachment": "Retirer la pièce jointe"
+  },
+  "permissions": {
+    "cameraTitle": "Permission de caméra requise",
+    "cameraMessage": "Veuillez autoriser l'accès à la caméra pour prendre des photos",
+    "mediaLibraryTitle": "Permission de bibliothèque photo requise",
+    "mediaLibraryMessage": "Veuillez autoriser l'accès à la bibliothèque de photos pour sélectionner des images"
+  },
+  "errors": {
+    "imagePickerTitle": "Erreur de sélection d'image",
+    "imagePickerMessage": "Échec de la sélection de l'image. Veuillez réessayer.",
+    "cameraTitle": "Erreur de caméra",
+    "cameraMessage": "Échec de la prise de photo. Veuillez réessayer.",
+    "imageUploadTitle": "Erreur de téléchargement",
+    "imageUploadMessage": "Échec du téléchargement de l'image. Veuillez réessayer."
   }
 }

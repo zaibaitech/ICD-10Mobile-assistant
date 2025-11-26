@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ChatMessage as ChatMessageType, SuggestedCode } from '../types';
 
@@ -15,6 +15,15 @@ export const ChatMessage: React.FC<Props> = ({ message, onAddCode }) => {
   return (
     <View style={[styles.container, isUser ? styles.userContainer : styles.assistantContainer]}>
       <View style={[styles.bubble, isUser ? styles.userBubble : styles.assistantBubble]}>
+        {/* Image Attachment */}
+        {message.imageUrl && (
+          <Image 
+            source={{ uri: message.imageUrl }} 
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )}
+
         <Text style={[styles.text, isUser ? styles.userText : styles.assistantText]}>
           {message.text}
         </Text>
@@ -96,6 +105,12 @@ const styles = StyleSheet.create({
   },
   assistantText: {
     color: '#000000',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   codesContainer: {
     marginTop: 12,

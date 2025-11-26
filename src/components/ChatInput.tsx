@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { VoiceRecordButton } from './VoiceRecordButton';
 
 interface Props {
   onSend: (text: string) => void;
+  onImageSelected?: (imageUri: string) => void;
   onVoiceRecordingComplete?: (audioUri: string) => void;
   isRecording?: boolean;
   isLoading?: boolean;
@@ -14,6 +16,7 @@ interface Props {
 
 export const ChatInput: React.FC<Props> = ({
   onSend,
+  onImageSelected,
   onVoiceRecordingComplete,
   isRecording = false,
   isLoading = false,
@@ -29,8 +32,104 @@ export const ChatInput: React.FC<Props> = ({
     }
   };
 
+  const handleImagePicker = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          t('permissions.mediaLibraryTitle'),
+          t('permissions.mediaLibraryMessage')
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0] && onImageSelected) {
+        onImageSelected(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert(
+        t('errors.imagePickerTitle'),
+        t('errors.imagePickerMessage')
+      );
+    }
+  };
+
+  const handleCamera = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          t('permissions.cameraTitle'),
+          t('permissions.cameraMessage')
+        );
+        return;
+      }
+
+      // Launch camera
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0] && onImageSelected) {
+        onImageSelected(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error using camera:', error);
+      Alert.alert(
+        t('errors.cameraTitle'),
+        t('errors.cameraMessage')
+      );
+    }
+  };
+
+  const showImageOptions = () => {
+    Alert.alert(
+      t('attachments.selectSource'),
+      '',
+      [
+        {
+          text: t('attachments.camera'),
+          onPress: handleCamera,
+        },
+        {
+          text: t('attachments.gallery'),
+          onPress: handleImagePicker,
+        },
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
+      {onImageSelected && (
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={showImageOptions}
+          disabled={isLoading || isRecording}
+        >
+          <Ionicons name="camera" size={24} color={isLoading || isRecording ? "#CCC" : "#007AFF"} />
+        </TouchableOpacity>
+      )}
+
       <TextInput
         style={styles.input}
         value={text}
@@ -73,6 +172,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
   },
   input: {
     flex: 1,

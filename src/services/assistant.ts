@@ -77,6 +77,7 @@ const KEYWORD_CODE_MAP: Record<string, SuggestedCode[]> = {
 
 /**
  * Get assistant reply based on user input
+ * Supports vision analysis when imageUrl is provided
  * TODO: Replace with real AI integration in Phase 3 (OpenAI/Claude API)
  */
 export const getAssistantReply = async (
@@ -84,6 +85,14 @@ export const getAssistantReply = async (
   context: AssistantContext
 ): Promise<AssistantResponse> => {
   const lowerInput = input.toLowerCase();
+  
+  // If image is provided, add vision-related context
+  let visionContext = '';
+  if (context.imageUrl) {
+    visionContext = ' [Image attached for analysis] ';
+    // TODO: In production, send image to GPT-4 Vision or similar API
+    // const visionAnalysis = await analyzeImageWithAI(context.imageUrl);
+  }
   
   // Find matching keywords
   const suggestedCodes: SuggestedCode[] = [];
@@ -100,11 +109,35 @@ export const getAssistantReply = async (
     }
   }
   
+  // Add image-specific code suggestions if image detected
+  if (context.imageUrl) {
+    // Add common visual presentation codes
+    const imageRelatedCodes: SuggestedCode[] = [
+      { id: 'img1', code: 'L98.9', short_title: 'Skin condition, unspecified', confidence: 'medium' },
+      { id: 'img2', code: 'T14.9', short_title: 'Injury, unspecified', confidence: 'low' },
+    ];
+    
+    imageRelatedCodes.forEach(code => {
+      if (!seenCodes.has(code.code)) {
+        suggestedCodes.push(code);
+        seenCodes.add(code.code);
+      }
+    });
+  }
+  
   // Generate response text
   let text = '';
   const clarifyingQuestions: string[] = [];
   
-  if (suggestedCodes.length > 0) {
+  if (context.imageUrl) {
+    text = '📷 I can see you\'ve attached an image. ' + (suggestedCodes.length > 0 
+      ? 'Based on your description and the visual information, here are relevant ICD-10 codes:'
+      : 'Please describe what the image shows (e.g., location, appearance, symptoms) for accurate coding.');
+    
+    clarifyingQuestions.push('What is the location and extent of the presentation?');
+    clarifyingQuestions.push('How long has this been present?');
+    clarifyingQuestions.push('Any associated symptoms or pain?');
+  } else if (suggestedCodes.length > 0) {
     text = 'Based on your description, here are some relevant ICD-10 codes to consider:';
     
     // Add clarifying questions based on found codes
@@ -160,6 +193,48 @@ export const transcribeAudio = async (audioUri: string): Promise<string> => {
   // });
   
   return 'Patient presents with chest pain on exertion';
+};
+
+/**
+ * Analyze medical image with AI vision
+ * TODO: Integrate with GPT-4 Vision or similar medical imaging AI
+ * @param imageUrl - Public URL of the uploaded image
+ * @returns Analysis of the image including potential diagnoses
+ */
+export const analyzeImageWithAI = async (imageUrl: string): Promise<{
+  description: string;
+  suggestedCodes: SuggestedCode[];
+}> => {
+  console.log('Analyzing image:', imageUrl);
+  
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // TODO: Replace with actual AI vision API call
+  // Example with OpenAI GPT-4 Vision:
+  // const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': `Bearer ${OPENAI_KEY}`
+  //   },
+  //   body: JSON.stringify({
+  //     model: 'gpt-4-vision-preview',
+  //     messages: [{
+  //       role: 'user',
+  //       content: [
+  //         { type: 'text', text: 'Analyze this medical image and suggest relevant ICD-10 codes.' },
+  //         { type: 'image_url', image_url: { url: imageUrl } }
+  //       ]
+  //     }],
+  //     max_tokens: 500
+  //   })
+  // });
+  
+  return {
+    description: 'Placeholder: Image analysis would appear here in production',
+    suggestedCodes: []
+  };
 };
 
 /**

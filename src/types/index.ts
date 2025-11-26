@@ -27,6 +27,7 @@ export interface ChatMessage {
   text: string;
   suggestedCodes?: SuggestedCode[];
   clarifyingQuestions?: string[];
+  imageUrl?: string; // Added for image attachments
   timestamp: Date;
 }
 
@@ -40,6 +41,7 @@ export interface SuggestedCode {
 export interface AssistantContext {
   currentVisitCodes: Icd10Code[];
   recentMessages?: ChatMessage[];
+  imageUrl?: string; // For vision analysis
 }
 
 export interface AssistantResponse {
