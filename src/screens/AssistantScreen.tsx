@@ -21,6 +21,7 @@ import { logAssistantInteraction } from '../services/logging';
 import { uploadImage } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { ChatMessage as ChatMessageType, SuggestedCode, RuleSuggestion } from '../types';
+import { Colors, Spacing, BorderRadius, Typography } from '../constants/theme';
 
 export const AssistantScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -248,7 +249,7 @@ export const AssistantScreen: React.FC = () => {
 
       {isLoading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#007AFF" />
+          <ActivityIndicator size="small" color={Colors.primary} />
           <Text style={styles.loadingText}>{t('assistant.thinking')}</Text>
         </View>
       )}
@@ -268,60 +269,60 @@ export const AssistantScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   messageList: {
-    paddingVertical: 10,
+    paddingVertical: Spacing.md,
   },
   disclaimer: {
     backgroundColor: '#FFF3CD',
-    padding: 12,
-    marginHorizontal: 12,
-    marginVertical: 8,
-    borderRadius: 8,
+    padding: Spacing.md,
+    marginHorizontal: Spacing.md,
+    marginVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
     borderLeftWidth: 4,
-    borderLeftColor: '#FFC107',
+    borderLeftColor: Colors.warning,
   },
   disclaimerText: {
-    fontSize: 13,
+    fontSize: Typography.fontSize.sm,
     color: '#856404',
     lineHeight: 18,
   },
   pendingImageContainer: {
-    padding: 12,
-    marginHorizontal: 12,
-    marginVertical: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    padding: Spacing.md,
+    marginHorizontal: Spacing.md,
+    marginVertical: Spacing.sm,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
   },
   pendingImageLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: Typography.fontSize.md,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
   },
   ruleSuggestionsContainer: {
-    marginVertical: 8,
+    marginVertical: Spacing.sm,
   },
   ruleSuggestionsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginHorizontal: 12,
-    marginBottom: 8,
-    color: '#333',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm,
+    color: Colors.textPrimary,
   },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    backgroundColor: '#FFFFFF',
+    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: Colors.border,
   },
   loadingText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: '#666',
+    marginLeft: Spacing.sm,
+    fontSize: Typography.fontSize.md,
+    color: Colors.textSecondary,
   },
 });

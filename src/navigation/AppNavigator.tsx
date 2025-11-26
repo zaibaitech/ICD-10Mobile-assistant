@@ -11,6 +11,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { RegisterScreen } from '../screens/RegisterScreen';
 
 // Main Tab Screens
+import { DashboardScreen } from '../screens/DashboardScreen';
 import { Icd10SearchScreen } from '../screens/Icd10SearchScreen';
 import { Icd10DetailScreen } from '../screens/Icd10DetailScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
@@ -102,18 +103,16 @@ const MainTabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
 
-          if (route.name === 'Patients') {
+          if (route.name === 'Dashboard') {
+            iconName = focused ? 'grid' : 'grid-outline';
+          } else if (route.name === 'Patients') {
             iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Assistant') {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
-          } else if (route.name === 'Favorites') {
-            iconName = focused ? 'heart' : 'heart-outline';
           } else if (route.name === 'Visit') {
             iconName = focused ? 'document-text' : 'document-text-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
           } else {
             iconName = 'help-outline';
           }
@@ -122,15 +121,42 @@ const MainTabNavigator = () => {
         },
         tabBarActiveTintColor: '#3498db',
         tabBarInactiveTintColor: '#95a5a6',
+        tabBarStyle: {
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+          borderTopWidth: 1,
+          borderTopColor: '#e0e0e0',
+          backgroundColor: '#FFFFFF',
+        },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Patients" component={PatientsNavigator} />
-      <Tab.Screen name="Search" component={SearchNavigator} />
-      <Tab.Screen name="Assistant" component={AssistantScreen} />
-      <Tab.Screen name="Favorites" component={FavoritesNavigator} />
-      <Tab.Screen name="Visit" component={VisitNoteScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen 
+        name="Dashboard" 
+        component={DashboardScreen}
+        options={{ tabBarLabel: 'Home' }}
+      />
+      <Tab.Screen 
+        name="Search" 
+        component={SearchNavigator}
+        options={{ tabBarLabel: 'Search' }}
+      />
+      <Tab.Screen 
+        name="Assistant" 
+        component={AssistantScreen}
+        options={{ tabBarLabel: 'AI' }}
+      />
+      <Tab.Screen 
+        name="Patients" 
+        component={PatientsNavigator}
+        options={{ tabBarLabel: 'Patients' }}
+      />
+      <Tab.Screen 
+        name="Visit" 
+        component={VisitNoteScreen}
+        options={{ tabBarLabel: 'Visit' }}
+      />
     </Tab.Navigator>
   );
 };

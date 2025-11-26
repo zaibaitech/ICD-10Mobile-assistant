@@ -251,10 +251,10 @@ export type RootStackParamList = {
 };
 
 export type MainTabParamList = {
-  Patients: undefined; // NEW in Phase 3
+  Dashboard: undefined; // NEW: Home screen
+  Patients: undefined; // Phase 3
   Search: undefined;
   Assistant: undefined; // Phase 2
-  Favorites: undefined;
   Visit: undefined;
   Profile: undefined;
 };
