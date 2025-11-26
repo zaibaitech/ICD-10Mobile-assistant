@@ -1,0 +1,132 @@
+{
+  "common": {
+    "search": "Search",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "clear": "Clear",
+    "copy": "Copy",
+    "add": "Add",
+    "remove": "Remove",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "auth": {
+    "login": "Sign In",
+    "register": "Sign Up",
+    "logout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInHere": "Sign In",
+    "signUpHere": "Sign Up",
+    "loggingIn": "Signing in...",
+    "signingUp": "Creating account...",
+    "loginError": "Invalid email or password",
+    "signupSuccess": "Account created successfully!",
+    "signupError": "Error creating account",
+    "passwordMismatch": "Passwords do not match",
+    "fillAllFields": "Please fill all fields"
+  },
+  "navigation": {
+    "search": "Search",
+    "assistant": "Assistant",
+    "favorites": "Favorites",
+    "visit": "Visit",
+    "profile": "Profile"
+  },
+  "search": {
+    "title": "ICD-10 Search",
+    "placeholder": "Search codes or descriptions...",
+    "filterByChapter": "Filter by Chapter",
+    "allChapters": "All Chapters",
+    "noResults": "No codes found",
+    "tryDifferentSearch": "Try a different search term"
+  },
+  "detail": {
+    "code": "Code",
+    "shortTitle": "Short Title",
+    "description": "Description",
+    "chapter": "Chapter",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "addToVisit": "Add to Visit",
+    "removeFromVisit": "Remove from Visit",
+    "alreadyInVisit": "Already in visit",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites",
+    "addedToVisit": "Added to visit",
+    "removedFromVisit": "Removed from visit"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "No favorites yet",
+    "addSome": "Tap the ❤️ on any code to add it to your favorites"
+  },
+  "visit": {
+    "title": "Visit Note",
+    "empty": "No diagnoses added",
+    "addCodes": "Search and add ICD-10 codes to build your visit note",
+    "diagnoses": "Diagnoses",
+    "copyNote": "Copy Note",
+    "clearVisit": "Clear Visit",
+    "confirmClear": "Clear all codes from visit?",
+    "noteCopied": "Visit note copied to clipboard",
+    "attachImage": "Attach Image",
+    "attachments": "Attachments"
+  },
+  "profile": {
+    "title": "Profile",
+    "userInfo": "User Information",
+    "language": "Language",
+    "english": "English",
+    "french": "Français",
+    "appInfo": "App Information",
+    "version": "Version",
+    "logout": "Sign Out",
+    "confirmLogout": "Are you sure you want to sign out?"
+  },
+  "assistant": {
+    "title": "Assistant",
+    "disclaimer": "⚠️ Documentation Assistant Only",
+    "disclaimerText": "This tool helps with ICD-10 coding and documentation. It does NOT provide medical diagnoses or clinical decisions.",
+    "placeholder": "Describe the clinical presentation...",
+    "send": "Send",
+    "recording": "Recording...",
+    "stopRecording": "Stop",
+    "transcribing": "Transcribing...",
+    "suggestedCodes": "Suggested Codes",
+    "addCode": "Add Code",
+    "codeAdded": "Code added to visit",
+    "clarifyingQuestions": "Clarifying Questions",
+    "noMessages": "Start a conversation",
+    "typeOrSpeak": "Type your question or use voice input"
+  },
+  "rules": {
+    "suggestion": "Suggestion",
+    "relatedCodes": "Related Codes",
+    "priority": {
+      "info": "Info",
+      "warning": "Important"
+    }
+  },
+  "attachments": {
+    "selectTag": "Select Tag",
+    "tags": {
+      "skin": "Skin",
+      "wound": "Wound",
+      "swelling": "Swelling",
+      "bruising": "Bruising",
+      "rash": "Rash",
+      "other": "Other"
+    },
+    "filterICD10": "Filter ICD-10 for {{category}}",
+    "noAttachments": "No attachments",
+    "removeAttachment": "Remove attachment"
+  }
+}

@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from './src/context/AuthContext';
 import { VisitProvider } from './src/context/VisitContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import './src/i18n'; // Initialize i18n
 
 export default function App() {
   return (

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Icd10Code } from '../types';
+import { Icd10Code, VisitAttachment } from '../types';
 
 interface VisitContextType {
   visitCodes: Icd10Code[];
@@ -7,12 +7,18 @@ interface VisitContextType {
   removeCodeFromVisit: (codeId: string) => void;
   clearVisit: () => void;
   isCodeInVisit: (codeId: string) => boolean;
+  // Attachments
+  attachments: VisitAttachment[];
+  addAttachment: (attachment: VisitAttachment) => void;
+  removeAttachment: (attachmentId: string) => void;
+  clearAttachments: () => void;
 }
 
 const VisitContext = createContext<VisitContextType | undefined>(undefined);
 
 export const VisitProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [visitCodes, setVisitCodes] = useState<Icd10Code[]>([]);
+  const [attachments, setAttachments] = useState<VisitAttachment[]>([]);
 
   const addCodeToVisit = (code: Icd10Code) => {
     setVisitCodes((prevCodes) => {
@@ -30,15 +36,38 @@ export const VisitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const clearVisit = () => {
     setVisitCodes([]);
+    setAttachments([]);
   };
 
   const isCodeInVisit = (codeId: string): boolean => {
     return visitCodes.some((c) => c.id === codeId);
   };
 
+  const addAttachment = (attachment: VisitAttachment) => {
+    setAttachments((prev) => [...prev, attachment]);
+  };
+
+  const removeAttachment = (attachmentId: string) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+  };
+
+  const clearAttachments = () => {
+    setAttachments([]);
+  };
+
   return (
     <VisitContext.Provider
-      value={{ visitCodes, addCodeToVisit, removeCodeFromVisit, clearVisit, isCodeInVisit }}
+      value={{
+        visitCodes,
+        addCodeToVisit,
+        removeCodeFromVisit,
+        clearVisit,
+        isCodeInVisit,
+        attachments,
+        addAttachment,
+        removeAttachment,
+        clearAttachments,
+      }}
     >
       {children}
     </VisitContext.Provider>
@@ -52,3 +81,6 @@ export const useVisit = () => {
   }
   return context;
 };
+
+// Alias for consistency with AssistantScreen
+export const useVisitContext = useVisit;

@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { RootStackParamList, MainTabParamList, SearchStackParamList, FavoritesStackParamList } from '../types';
+import { RootStackParamList, MainTabParamList, SearchStackParamList, FavoritesStackParamList, PatientsStackParamList } from '../types';
 
 // Auth Screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -14,13 +14,21 @@ import { RegisterScreen } from '../screens/RegisterScreen';
 import { Icd10SearchScreen } from '../screens/Icd10SearchScreen';
 import { Icd10DetailScreen } from '../screens/Icd10DetailScreen';
 import { FavoritesScreen } from '../screens/FavoritesScreen';
+import { AssistantScreen } from '../screens/AssistantScreen';
 import { VisitNoteScreen } from '../screens/VisitNoteScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+
+// Patient Screens (Phase 3)
+import { PatientsListScreen } from '../screens/PatientsListScreen';
+import { PatientDetailScreen } from '../screens/PatientDetailScreen';
+import { EncounterFormScreen } from '../screens/EncounterFormScreen';
+import { EncounterDetailScreen } from '../screens/EncounterDetailScreen';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const SearchStack = createNativeStackNavigator<SearchStackParamList>();
 const FavoritesStack = createNativeStackNavigator<FavoritesStackParamList>();
+const PatientsStack = createNativeStackNavigator<PatientsStackParamList>();
 
 // Search Stack Navigator
 const SearchNavigator = () => {
@@ -58,6 +66,34 @@ const FavoritesNavigator = () => {
   );
 };
 
+// Patients Stack Navigator (Phase 3)
+const PatientsNavigator = () => {
+  return (
+    <PatientsStack.Navigator>
+      <PatientsStack.Screen
+        name="PatientsList"
+        component={PatientsListScreen}
+        options={{ headerShown: false }}
+      />
+      <PatientsStack.Screen
+        name="PatientDetail"
+        component={PatientDetailScreen}
+        options={{ title: 'Patient Details' }}
+      />
+      <PatientsStack.Screen
+        name="EncounterForm"
+        component={EncounterFormScreen}
+        options={{ title: 'New Encounter' }}
+      />
+      <PatientsStack.Screen
+        name="EncounterDetail"
+        component={EncounterDetailScreen}
+        options={{ title: 'Encounter Details' }}
+      />
+    </PatientsStack.Navigator>
+  );
+};
+
 // Main Tab Navigator (authenticated users)
 const MainTabNavigator = () => {
   return (
@@ -66,8 +102,12 @@ const MainTabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
 
-          if (route.name === 'Search') {
+          if (route.name === 'Patients') {
+            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Assistant') {
+            iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
           } else if (route.name === 'Favorites') {
             iconName = focused ? 'heart' : 'heart-outline';
           } else if (route.name === 'Visit') {
@@ -85,7 +125,9 @@ const MainTabNavigator = () => {
         headerShown: false,
       })}
     >
+      <Tab.Screen name="Patients" component={PatientsNavigator} />
       <Tab.Screen name="Search" component={SearchNavigator} />
+      <Tab.Screen name="Assistant" component={AssistantScreen} />
       <Tab.Screen name="Favorites" component={FavoritesNavigator} />
       <Tab.Screen name="Visit" component={VisitNoteScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />

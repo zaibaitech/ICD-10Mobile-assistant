@@ -1,0 +1,132 @@
+{
+  "common": {
+    "search": "Rechercher",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "clear": "Effacer",
+    "copy": "Copier",
+    "add": "Ajouter",
+    "remove": "Retirer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "back": "Retour"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Se déconnecter",
+    "email": "Courriel",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "dontHaveAccount": "Vous n'avez pas de compte?",
+    "alreadyHaveAccount": "Vous avez déjà un compte?",
+    "signInHere": "Se connecter",
+    "signUpHere": "S'inscrire",
+    "loggingIn": "Connexion en cours...",
+    "signingUp": "Création du compte...",
+    "loginError": "Courriel ou mot de passe invalide",
+    "signupSuccess": "Compte créé avec succès!",
+    "signupError": "Erreur lors de la création du compte",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "fillAllFields": "Veuillez remplir tous les champs"
+  },
+  "navigation": {
+    "search": "Recherche",
+    "assistant": "Assistant",
+    "favorites": "Favoris",
+    "visit": "Visite",
+    "profile": "Profil"
+  },
+  "search": {
+    "title": "Recherche CIM-10",
+    "placeholder": "Rechercher des codes ou descriptions...",
+    "filterByChapter": "Filtrer par chapitre",
+    "allChapters": "Tous les chapitres",
+    "noResults": "Aucun code trouvé",
+    "tryDifferentSearch": "Essayez un autre terme de recherche"
+  },
+  "detail": {
+    "code": "Code",
+    "shortTitle": "Titre court",
+    "description": "Description",
+    "chapter": "Chapitre",
+    "addToFavorites": "Ajouter aux favoris",
+    "removeFromFavorites": "Retirer des favoris",
+    "addToVisit": "Ajouter à la visite",
+    "removeFromVisit": "Retirer de la visite",
+    "alreadyInVisit": "Déjà dans la visite",
+    "addedToFavorites": "Ajouté aux favoris",
+    "removedFromFavorites": "Retiré des favoris",
+    "addedToVisit": "Ajouté à la visite",
+    "removedFromVisit": "Retiré de la visite"
+  },
+  "favorites": {
+    "title": "Mes favoris",
+    "empty": "Aucun favori",
+    "addSome": "Appuyez sur ❤️ sur n'importe quel code pour l'ajouter à vos favoris"
+  },
+  "visit": {
+    "title": "Note de visite",
+    "empty": "Aucun diagnostic ajouté",
+    "addCodes": "Recherchez et ajoutez des codes CIM-10 pour créer votre note de visite",
+    "diagnoses": "Diagnostics",
+    "copyNote": "Copier la note",
+    "clearVisit": "Effacer la visite",
+    "confirmClear": "Effacer tous les codes de la visite?",
+    "noteCopied": "Note de visite copiée dans le presse-papiers",
+    "attachImage": "Joindre une image",
+    "attachments": "Pièces jointes"
+  },
+  "profile": {
+    "title": "Profil",
+    "userInfo": "Informations utilisateur",
+    "language": "Langue",
+    "english": "English",
+    "french": "Français",
+    "appInfo": "Informations sur l'application",
+    "version": "Version",
+    "logout": "Se déconnecter",
+    "confirmLogout": "Êtes-vous sûr de vouloir vous déconnecter?"
+  },
+  "assistant": {
+    "title": "Assistant",
+    "disclaimer": "⚠️ Assistant de documentation uniquement",
+    "disclaimerText": "Cet outil aide à la codification CIM-10 et à la documentation. Il ne fournit PAS de diagnostics médicaux ou de décisions cliniques.",
+    "placeholder": "Décrivez la présentation clinique...",
+    "send": "Envoyer",
+    "recording": "Enregistrement...",
+    "stopRecording": "Arrêter",
+    "transcribing": "Transcription...",
+    "suggestedCodes": "Codes suggérés",
+    "addCode": "Ajouter le code",
+    "codeAdded": "Code ajouté à la visite",
+    "clarifyingQuestions": "Questions de clarification",
+    "noMessages": "Commencer une conversation",
+    "typeOrSpeak": "Tapez votre question ou utilisez l'entrée vocale"
+  },
+  "rules": {
+    "suggestion": "Suggestion",
+    "relatedCodes": "Codes connexes",
+    "priority": {
+      "info": "Info",
+      "warning": "Important"
+    }
+  },
+  "attachments": {
+    "selectTag": "Sélectionner une étiquette",
+    "tags": {
+      "skin": "Peau",
+      "wound": "Plaie",
+      "swelling": "Enflure",
+      "bruising": "Ecchymose",
+      "rash": "Éruption",
+      "other": "Autre"
+    },
+    "filterICD10": "Filtrer CIM-10 pour {{category}}",
+    "noAttachments": "Aucune pièce jointe",
+    "removeAttachment": "Retirer la pièce jointe"
+  }
+}
