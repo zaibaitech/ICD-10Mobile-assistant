@@ -125,9 +125,9 @@ export interface Patient {
 
 export interface PatientInput {
   display_label: string;
-  year_of_birth?: number;
+  year_of_birth?: number | null;
   sex?: Sex;
-  notes?: string;
+  notes?: string | null;
 }
 
 // Encounter Types
@@ -149,41 +149,41 @@ export interface Encounter {
 }
 
 export interface StructuredEncounterData {
-  duration?: DurationValue;
-  pain?: PainData;
+  // Symptoms
   fever?: boolean;
   cough?: boolean;
   shortness_of_breath?: boolean;
-  red_flags?: RedFlagType[];
-  vitals?: VitalsData;
+  chest_pain?: boolean;
+  severe_abdominal_pain?: boolean;
+  confusion?: boolean;
+  
+  // Duration
+  duration?: 'hours' | 'days' | 'weeks' | 'months';
+  
+  // Pain details
+  pain?: {
+    present: boolean;
+    location?: string;
+    severity?: number; // 1-10
+    radiating?: boolean;
+  };
+  
+  // Vitals
+  vitals?: {
+    temperature?: number;
+    heart_rate?: number;
+    bp_systolic?: number;
+    bp_diastolic?: number;
+    respiratory_rate?: number;
+    oxygen_saturation?: number;
+  };
+  
+  // Red flags (checklist)
+  red_flags?: string[];
+  
+  // Free text
   notes?: string;
 }
-
-export type DurationValue = 'hours' | 'days' | 'weeks' | 'months';
-
-export interface PainData {
-  present: boolean;
-  location?: string;
-  severity?: number; // 1-10
-}
-
-export interface VitalsData {
-  temperature?: number;
-  heart_rate?: number;
-  blood_pressure_systolic?: number;
-  blood_pressure_diastolic?: number;
-  respiratory_rate?: number;
-  oxygen_saturation?: number;
-}
-
-export type RedFlagType =
-  | 'chest_pain'
-  | 'sudden_weakness'
-  | 'severe_abdominal_pain'
-  | 'altered_mental_status'
-  | 'difficulty_breathing'
-  | 'severe_headache'
-  | 'signs_of_stroke';
 
 export interface EncounterInput {
   patient_id: string;
@@ -203,11 +203,12 @@ export interface EncounterIcd10 {
 }
 
 // Clinical Analysis Types
+export type Likelihood = 'low' | 'medium' | 'high';
+
 export interface PossibleCondition {
   name: string;
   icd10_code?: string;
-  icd10_id?: string;
-  likelihood: 'low' | 'medium' | 'high';
+  likelihood: Likelihood;
   explanation?: string;
 }
 
@@ -216,31 +217,23 @@ export interface ClinicalAnalysisResult {
   risk_level: RiskLevel;
   red_flags: string[];
   recommended_questions: string[];
-  summary: string;
   caution_text: string;
 }
 
-export interface ClinicalAnalysisInput {
-  patient: {
-    age?: number;
-    sex: Sex;
-  };
-  encounter: {
-    chief_complaint: string;
-    structured_data: StructuredEncounterData;
-  };
-  additional_notes?: string;
-}
-
 // Clinical Analysis Logging
-export interface ClinicalAnalysisLog {
-  id: string;
+export interface ClinicalAnalysisLogInput {
   user_id: string;
-  patient_id: string | null;
-  encounter_id: string | null;
-  input_snapshot: ClinicalAnalysisInput;
+  patient_id?: string | null;
+  encounter_id?: string | null;
+  input_snapshot: {
+    patient: { id: string; sex: Sex; year_of_birth: number | null };
+    encounter: {
+      id: string;
+      chief_complaint: string;
+      structured_data: StructuredEncounterData;
+    };
+  };
   result_snapshot: ClinicalAnalysisResult;
-  created_at: string;
 }
 
 // Navigation Types

@@ -125,6 +125,46 @@ FROM pg_tables
 WHERE tablename = 'user_favorites';
 ```
 
+## Phase 3: Clinical Support Module (Patients & Encounters)
+
+If you need the full clinical support features, run the Phase 3 schema:
+
+### Run Phase 3 Schema
+
+1. In Supabase SQL Editor, create a new query
+2. Copy the contents of `database/phase3_clinical.sql`
+3. Paste and click **Run**
+
+This creates 5 additional tables:
+- `patients` - Patient records
+- `encounters` - Clinical encounters/visits
+- `encounter_icd10_codes` - Links encounters to ICD-10 codes
+- `encounter_ai_results` - Detailed AI analysis results
+- `clinical_analysis_logs` - Audit trail for all analyses
+
+### Verify Phase 3 Setup
+
+```sql
+-- Check that Phase 3 tables exist
+SELECT tablename FROM pg_tables 
+WHERE tablename IN ('patients', 'encounters', 'encounter_icd10_codes', 'encounter_ai_results', 'clinical_analysis_logs')
+ORDER BY tablename;
+
+-- Should return 5 tables
+```
+
+### Phase 3 Testing
+
+```sql
+-- Test 1: Insert a test patient
+INSERT INTO patients (user_id, display_label, year_of_birth, sex)
+VALUES (auth.uid(), 'Test Patient', 1980, 'unknown')
+RETURNING *;
+
+-- Test 2: Verify RLS on patients
+SELECT * FROM patients;
+```
+
 ## Next Steps
 
 Once your database is set up:

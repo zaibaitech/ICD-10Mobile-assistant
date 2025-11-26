@@ -1,5 +1,16 @@
+// ============================================
+// LOGGING SERVICE
+// ============================================
+// Handles audit trails for both assistant interactions and clinical analysis
+
 import { supabase } from './supabase';
-import { AssistantLogEntry, SuggestedCode } from '../types';
+import type {
+  AssistantLogEntry,
+  SuggestedCode,
+  Patient,
+  Encounter,
+  ClinicalAnalysisResult,
+} from '../types';
 
 /**
  * Log assistant interaction to Supabase for audit trail
@@ -108,3 +119,122 @@ export const getAcceptanceStats = async (userId: string): Promise<{
     return { totalSuggestions: 0, totalAccepted: 0, acceptanceRate: 0 };
   }
 };
+
+// ============================================
+// CLINICAL ANALYSIS LOGGING (PHASE 3)
+// ============================================
+
+interface LogAnalysisParams {
+  userId: string;
+  patient: Patient;
+  encounter: Encounter;
+  result: ClinicalAnalysisResult;
+}
+
+/**
+ * Log clinical analysis to Supabase for audit trail
+ * Stores de-identified snapshots of input and output
+ */
+export async function logClinicalAnalysis({
+  userId,
+  patient,
+  encounter,
+  result,
+}: LogAnalysisParams): Promise<void> {
+  const inputSnapshot = {
+    patient: {
+      id: patient.id,
+      sex: patient.sex,
+      year_of_birth: patient.year_of_birth,
+      // Note: display_label omitted for privacy
+    },
+    encounter: {
+      id: encounter.id,
+      chief_complaint: encounter.chief_complaint,
+      structured_data: encounter.structured_data,
+    },
+  };
+
+  const { error } = await supabase.from('clinical_analysis_logs').insert({
+    user_id: userId,
+    patient_id: patient.id,
+    encounter_id: encounter.id,
+    input_snapshot: inputSnapshot,
+    result_snapshot: result,
+  });
+
+  if (error) {
+    console.error('Failed to log clinical analysis:', error);
+    // Non-blocking - don't throw, just log
+  }
+}
+
+/**
+ * Save detailed AI result to encounter_ai_results table
+ */
+export async function saveAiResult({
+  userId,
+  encounterId,
+  analysis,
+}: {
+  userId: string;
+  encounterId: string;
+  analysis: ClinicalAnalysisResult;
+}): Promise<void> {
+  const { error } = await supabase.from('encounter_ai_results').insert({
+    user_id: userId,
+    encounter_id: encounterId,
+    analysis,
+  });
+
+  if (error) {
+    console.error('Failed to save AI result:', error);
+    throw error;
+  }
+}
+
+/**
+ * Update encounter with AI summary and risk level
+ */
+export async function updateEncounterWithAi(
+  encounterId: string,
+  result: ClinicalAnalysisResult
+): Promise<void> {
+  const summary = generateSummary(result);
+
+  const { error } = await supabase
+    .from('encounters')
+    .update({
+      ai_summary: summary,
+      ai_risk_level: result.risk_level,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', encounterId);
+
+  if (error) {
+    console.error('Failed to update encounter with AI:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generate plain-text summary from analysis result
+ */
+function generateSummary(result: ClinicalAnalysisResult): string {
+  const parts: string[] = [];
+
+  parts.push(`Risk Level: ${result.risk_level.toUpperCase()}`);
+
+  if (result.red_flags.length > 0) {
+    parts.push(`Red Flags: ${result.red_flags.length} identified`);
+  }
+
+  if (result.possible_conditions.length > 0) {
+    const conditions = result.possible_conditions
+      .map((c) => c.name)
+      .join(', ');
+    parts.push(`Possible Conditions: ${conditions}`);
+  }
+
+  return parts.join(' | ');
+}
