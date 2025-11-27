@@ -1,0 +1,67 @@
+{
+  "common": {
+    "search": "खोजें",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "clear": "साफ़ करें",
+    "copy": "कॉपी करें",
+    "add": "जोड़ें",
+    "remove": "हटाएं",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "confirm": "पुष्टि करें",
+    "back": "वापस"
+  },
+  "dashboard": {
+    "goodMorning": "सुप्रभात",
+    "goodAfternoon": "नमस्ते",
+    "goodEvening": "शुभ संध्या",
+    "todayOverview": "आज का अवलोकन",
+    "quickActions": "त्वरित क्रियाएं",
+    "searchCodes": "ICD-10 कोड खोजें",
+    "searchCodesDesc": "निदान कोड तेजी से खोजें",
+    "aiAssistant": "AI दस्तावेज़ीकरण सहायक",
+    "aiAssistantDesc": "कोडिंग सुझाव प्राप्त करें",
+    "patients": "रोगी प्रबंधन",
+    "patientsDesc": "रोगियों को देखें और प्रबंधित करें",
+    "currentVisit": "वर्तमान विजिट नोट",
+    "codesAdded": "कोड जोड़े गए",
+    "activeCodes": "सक्रिय कोड",
+    "encounters": "मुलाकातें",
+    "favorites": "पसंदीदा",
+    "currentVisitSummary": "वर्तमान विजिट",
+    "viewAll": "सभी देखें",
+    "diagnosisCodes": "निदान कोड",
+    "readyToDocument": "दस्तावेज़ के लिए तैयार",
+    "tipMessage": "सुझाव: नैदानिक ​​नोट्स के आधार पर त्वरित कोड सुझावों के लिए AI सहायक का उपयोग करें"
+  },
+  "auth": {
+    "login": "साइन इन करें",
+    "register": "साइन अप करें",
+    "logout": "साइन आउट करें",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "dontHaveAccount": "खाता नहीं है?",
+    "alreadyHaveAccount": "पहले से खाता है?",
+    "signInHere": "साइन इन करें",
+    "signUpHere": "साइन अप करें"
+  },
+  "navigation": {
+    "search": "खोजें",
+    "assistant": "सहायक",
+    "favorites": "पसंदीदा",
+    "visit": "विजिट",
+    "profile": "प्रोफ़ाइल"
+  },
+  "search": {
+    "title": "ICD-10 खोज",
+    "placeholder": "कोड या विवरण खोजें...",
+    "filterByChapter": "अध्याय के अनुसार फ़िल्टर करें",
+    "allChapters": "सभी अध्याय",
+    "noResults": "कोई कोड नहीं मिला",
+    "tryDifferentSearch": "एक अलग खोज शब्द आज़माएं"
+  }
+}

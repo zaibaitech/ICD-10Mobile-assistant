@@ -1,0 +1,298 @@
+{
+  "disease_name": "Tuberculosis",
+  "icd10_codes": ["A15", "A16", "A17", "A18", "A19"],
+  "red_flags": [
+    {
+      "symptom": "Hemoptysis (coughing blood)",
+      "severity": "high",
+      "action": "Immediate evaluation, chest X-ray, consider hospital admission",
+      "timeframe": "within 1 hour"
+    },
+    {
+      "symptom": "Severe respiratory distress",
+      "severity": "critical",
+      "action": "Oxygen therapy, urgent chest X-ray, rule out pneumothorax",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Signs of meningitis (neck stiffness, altered consciousness)",
+      "severity": "critical",
+      "action": "Lumbar puncture, start empiric TB meningitis treatment",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Severe weight loss (>10% body weight) or BMI < 16",
+      "severity": "high",
+      "action": "Nutritional assessment and support, start TB treatment",
+      "timeframe": "within 24 hours"
+    },
+    {
+      "symptom": "HIV co-infection with CD4 < 50",
+      "severity": "critical",
+      "action": "Immediate ART initiation within 2 weeks of TB treatment start",
+      "timeframe": "within 24 hours"
+    }
+  ],
+  "diagnostic_criteria": [
+    {
+      "category": "clinical",
+      "criteria": [
+        "Chronic cough > 2 weeks",
+        "Night sweats",
+        "Unintentional weight loss",
+        "Fever > 2 weeks",
+        "Contact with TB patient"
+      ],
+      "minimum_required": 2,
+      "specificity": 0.3,
+      "sensitivity": 0.7
+    },
+    {
+      "category": "laboratory",
+      "criteria": [
+        "Positive sputum smear microscopy (AFB+)",
+        "Positive GeneXpert MTB/RIF",
+        "Positive sputum culture for M. tuberculosis",
+        "Positive TB-LAM urine test (HIV+ patients)"
+      ],
+      "minimum_required": 1,
+      "specificity": 0.98,
+      "sensitivity": 0.85
+    },
+    {
+      "category": "imaging",
+      "criteria": [
+        "Chest X-ray: upper lobe infiltrates",
+        "Chest X-ray: cavitary lesions",
+        "Chest X-ray: miliary pattern (TB dissemination)"
+      ],
+      "minimum_required": 1,
+      "specificity": 0.6,
+      "sensitivity": 0.75
+    }
+  ],
+  "treatment_algorithm": [
+    {
+      "step_number": 1,
+      "title": "Confirm Diagnosis",
+      "description": "Obtain sputum samples and perform GeneXpert or smear microscopy",
+      "medications": [],
+      "duration": "Same day",
+      "follow_up": "Results within 2 hours (GeneXpert) or 24 hours (smear)",
+      "special_considerations": [
+        "Collect 2 sputum samples: spot and early morning",
+        "If unable to produce sputum, consider induced sputum or gastric aspirate (children)",
+        "GeneXpert detects rifampicin resistance",
+        "Start treatment empirically if strong clinical suspicion and cannot wait"
+      ]
+    },
+    {
+      "step_number": 2,
+      "title": "Intensive Phase (2 months)",
+      "description": "Daily directly observed therapy (DOT) with 4 drugs",
+      "medications": [
+        {
+          "name": "RHZE Fixed-Dose Combination",
+          "generic_name": "rifampicin-isoniazid-pyrazinamide-ethambutol",
+          "dosage": "Weight-based: 150/75/400/275 mg FDC tablets",
+          "route": "oral",
+          "frequency": "Once daily",
+          "duration": "2 months (8 weeks)",
+          "contraindications": ["Severe liver disease", "Known drug allergy"],
+          "side_effects": ["Orange urine/tears", "Hepatotoxicity", "Peripheral neuropathy", "Visual changes"],
+          "cost_usd": 20.0
+        },
+        {
+          "name": "Pyridoxine (Vitamin B6)",
+          "generic_name": "pyridoxine",
+          "dosage": "25-50 mg daily",
+          "route": "oral",
+          "frequency": "Once daily",
+          "duration": "Throughout TB treatment",
+          "contraindications": [],
+          "side_effects": [],
+          "cost_usd": 2.0
+        }
+      ],
+      "duration": "2 months",
+      "follow_up": "Monthly sputum, liver function tests at baseline and 1 month",
+      "special_considerations": [
+        "DOT mandatory - observe patient swallowing medications",
+        "Take medications on empty stomach (1 hour before food)",
+        "Monitor for hepatotoxicity (jaundice, nausea, abdominal pain)",
+        "Check visual acuity monthly (ethambutol toxicity)"
+      ]
+    },
+    {
+      "step_number": 3,
+      "title": "Continuation Phase (4 months)",
+      "description": "Daily therapy with 2 drugs after negative sputum at 2 months",
+      "medications": [
+        {
+          "name": "RH Fixed-Dose Combination",
+          "generic_name": "rifampicin-isoniazid",
+          "dosage": "Weight-based: 150/75 mg or 300/150 mg FDC",
+          "route": "oral",
+          "frequency": "Once daily",
+          "duration": "4 months (16 weeks)",
+          "contraindications": ["Severe liver disease"],
+          "side_effects": ["Orange urine", "Hepatotoxicity", "Peripheral neuropathy"],
+          "cost_usd": 15.0
+        }
+      ],
+      "duration": "4 months",
+      "follow_up": "Monthly clinic visits, sputum at end of treatment",
+      "special_considerations": [
+        "Total treatment duration: 6 months for new pulmonary TB",
+        "Extend to 8-12 months for TB meningitis, bone/joint TB",
+        "Continue pyridoxine throughout",
+        "Patient can stop DOT if adherent and tolerating well"
+      ]
+    },
+    {
+      "step_number": 4,
+      "title": "MDR-TB Treatment (if rifampicin resistant)",
+      "description": "Longer treatment with second-line drugs - REFER TO SPECIALIST",
+      "medications": [
+        {
+          "name": "Bedaquiline-based regimen",
+          "generic_name": "bedaquiline + linezolid + others",
+          "dosage": "Individualized based on resistance pattern",
+          "route": "oral",
+          "frequency": "Daily",
+          "duration": "9-20 months",
+          "contraindications": ["QT prolongation"],
+          "side_effects": ["QT prolongation", "Neuropathy", "Bone marrow suppression"],
+          "cost_usd": 1500.0
+        }
+      ],
+      "duration": "9-20 months",
+      "follow_up": "Monthly sputum culture, ECG monitoring",
+      "special_considerations": [
+        "Requires expert consultation",
+        "Social support critical for long treatment",
+        "Monitor for drug interactions with ARVs"
+      ]
+    }
+  ],
+  "differential_diagnosis": [
+    {
+      "condition": "Bacterial pneumonia",
+      "icd10_code": "J18.9",
+      "distinguishing_features": [
+        "Acute onset (days not weeks)",
+        "High fever with rigors",
+        "Responds to antibiotics in 48-72 hours",
+        "Lobar consolidation on X-ray"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Lung cancer",
+      "icd10_code": "C34.9",
+      "distinguishing_features": [
+        "Age > 50, smoking history",
+        "Mass lesion on chest X-ray",
+        "Weight loss without fever",
+        "Negative TB tests"
+      ],
+      "prevalence": "uncommon"
+    },
+    {
+      "condition": "HIV-related pneumonia (PCP)",
+      "icd10_code": "B59",
+      "distinguishing_features": [
+        "HIV+ with CD4 < 200",
+        "Dry cough, progressive dyspnea",
+        "Bilateral interstitial infiltrates",
+        "Elevated LDH"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Bronchiectasis",
+      "icd10_code": "J47.9",
+      "distinguishing_features": [
+        "Chronic productive cough with purulent sputum",
+        "Recurrent infections",
+        "Dilated bronchi on CT scan"
+      ],
+      "prevalence": "uncommon"
+    }
+  ],
+  "complications": [
+    {
+      "name": "Drug-induced hepatitis",
+      "risk_factors": ["Pre-existing liver disease", "Alcohol use", "HIV co-infection"],
+      "prevention": "Baseline and monthly liver function tests",
+      "management": "Stop all TB drugs if ALT > 5x normal or jaundice; reintroduce sequentially"
+    },
+    {
+      "name": "Peripheral neuropathy",
+      "risk_factors": ["Isoniazid use", "HIV", "Diabetes", "Malnutrition"],
+      "prevention": "Pyridoxine 25-50 mg daily",
+      "management": "Increase pyridoxine to 100-200 mg daily"
+    },
+    {
+      "name": "TB-IRIS (Immune Reconstitution Inflammatory Syndrome)",
+      "risk_factors": ["HIV co-infection", "Low CD4", "Starting ART soon after TB treatment"],
+      "prevention": "Delay ART 2-8 weeks after TB treatment start",
+      "management": "Continue TB/ART, add prednisone 1 mg/kg for severe cases"
+    },
+    {
+      "name": "Hemoptysis",
+      "risk_factors": ["Cavitary disease", "Bronchiectasis"],
+      "prevention": "Adequate TB treatment to heal cavities",
+      "management": "Bed rest, antifibrinolytics, bronchoscopy/surgery if massive"
+    }
+  ],
+  "prevention": [
+    {
+      "type": "primary",
+      "intervention": "BCG vaccination at birth",
+      "target_population": "All infants in TB-endemic countries",
+      "effectiveness": "Prevents severe TB (meningitis, miliary) in children by 70-80%, limited effect on pulmonary TB"
+    },
+    {
+      "type": "primary",
+      "intervention": "TB preventive therapy (TPT) for contacts",
+      "target_population": "Household contacts of TB patients, especially children < 5 and HIV+",
+      "effectiveness": "Isoniazid 6 months reduces TB risk by 60%, 3HP (isoniazid + rifapentine 3 months) by 90%"
+    },
+    {
+      "type": "secondary",
+      "intervention": "Contact tracing and screening",
+      "target_population": "All household and close contacts of TB patients",
+      "effectiveness": "Identifies 5-10% of contacts with active TB"
+    },
+    {
+      "type": "tertiary",
+      "intervention": "Airborne infection control in healthcare",
+      "target_population": "Healthcare facilities",
+      "effectiveness": "Natural ventilation, UV lights, N95 masks reduce nosocomial transmission"
+    }
+  ],
+  "references": [
+    {
+      "title": "WHO Guidelines on TB treatment",
+      "source": "WHO",
+      "url": "https://www.who.int/publications/i/item/9789240063129",
+      "year": 2022,
+      "evidence_level": "A"
+    },
+    {
+      "title": "WHO TB/HIV guidance",
+      "source": "WHO",
+      "url": "https://www.who.int/publications/i/item/978-92-4-155023-9",
+      "year": 2023,
+      "evidence_level": "A"
+    },
+    {
+      "title": "CDC TB Treatment Guidelines",
+      "source": "CDC",
+      "url": "https://www.cdc.gov/tb/publications/guidelines/treatment.htm",
+      "year": 2023,
+      "evidence_level": "A"
+    }
+  ]
+}

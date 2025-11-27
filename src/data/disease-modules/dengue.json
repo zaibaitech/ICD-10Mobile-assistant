@@ -1,0 +1,303 @@
+{
+  "disease_name": "Dengue Fever",
+  "icd10_codes": ["A90", "A91"],
+  "red_flags": [
+    {
+      "symptom": "Severe abdominal pain or persistent vomiting",
+      "severity": "critical",
+      "action": "Immediate IV fluids, monitor for dengue hemorrhagic fever",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Bleeding (epistaxis, gum bleeding, blood in vomit/stool)",
+      "severity": "critical",
+      "action": "Admit to hospital, monitor platelet count and hematocrit",
+      "timeframe": "within 1 hour"
+    },
+    {
+      "symptom": "Signs of plasma leakage (pleural effusion, ascites)",
+      "severity": "critical",
+      "action": "IV crystalloid resuscitation, intensive monitoring",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Altered consciousness or lethargy",
+      "severity": "critical",
+      "action": "Check for dengue shock syndrome, aggressive fluid resuscitation",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Platelet count < 50,000 with bleeding",
+      "severity": "high",
+      "action": "Hospital admission, platelet transfusion if active bleeding",
+      "timeframe": "within 1 hour"
+    }
+  ],
+  "diagnostic_criteria": [
+    {
+      "category": "clinical",
+      "criteria": [
+        "Sudden onset high fever (39-40°C)",
+        "Severe headache (especially retro-orbital pain)",
+        "Myalgia and arthralgia (break-bone fever)",
+        "Rash (maculopapular, appears day 3-5)",
+        "Travel to or residence in dengue-endemic area"
+      ],
+      "minimum_required": 3,
+      "specificity": 0.5,
+      "sensitivity": 0.8
+    },
+    {
+      "category": "laboratory",
+      "criteria": [
+        "Positive dengue NS1 antigen (early: days 1-5)",
+        "Positive dengue IgM antibody (day 4 onwards)",
+        "Positive dengue IgG antibody (secondary infection)",
+        "Positive dengue PCR"
+      ],
+      "minimum_required": 1,
+      "specificity": 0.95,
+      "sensitivity": 0.85
+    },
+    {
+      "category": "laboratory",
+      "criteria": [
+        "Thrombocytopenia (platelet count < 100,000)",
+        "Hemoconcentration (hematocrit increased by 20%)",
+        "Leukopenia (WBC < 5,000)"
+      ],
+      "minimum_required": 1,
+      "specificity": 0.6,
+      "sensitivity": 0.7
+    }
+  ],
+  "treatment_algorithm": [
+    {
+      "step_number": 1,
+      "title": "Classify Dengue Severity",
+      "description": "Use WHO 2009 classification to guide management",
+      "medications": [],
+      "duration": "Initial assessment",
+      "follow_up": "Re-assess daily during critical phase (days 3-7)",
+      "special_considerations": [
+        "Group A (Dengue without warning signs): Can be managed at home",
+        "Group B (Dengue with warning signs): Requires hospital observation",
+        "Group C (Severe dengue): Requires ICU admission and aggressive management",
+        "Warning signs: abdominal pain, persistent vomiting, mucosal bleeding, lethargy, liver enlargement, rising hematocrit with falling platelets"
+      ]
+    },
+    {
+      "step_number": 2,
+      "title": "Group A: Outpatient Management",
+      "description": "Home care for uncomplicated dengue",
+      "medications": [
+        {
+          "name": "Paracetamol",
+          "generic_name": "acetaminophen",
+          "dosage": "500-1000 mg for adults, 15 mg/kg for children",
+          "route": "oral",
+          "frequency": "Every 6 hours as needed",
+          "duration": "Until fever subsides",
+          "contraindications": ["Severe liver disease"],
+          "side_effects": ["Rare: hepatotoxicity at high doses"],
+          "cost_usd": 0.05
+        }
+      ],
+      "duration": "5-7 days",
+      "follow_up": "Daily clinic visit or phone check during critical phase (days 3-7)",
+      "special_considerations": [
+        "AVOID: Aspirin, NSAIDs, IM injections (bleeding risk)",
+        "Encourage oral fluids: 2-3 liters/day",
+        "Bed rest during febrile phase",
+        "Return immediately if warning signs develop",
+        "Monitor platelet count every 1-2 days"
+      ]
+    },
+    {
+      "step_number": 3,
+      "title": "Group B: Hospital Observation",
+      "description": "For dengue with warning signs",
+      "medications": [
+        {
+          "name": "IV Crystalloid Fluids",
+          "generic_name": "normal saline or Ringer's lactate",
+          "dosage": "5-7 mL/kg/hour initially",
+          "route": "IV",
+          "frequency": "Continuous infusion",
+          "duration": "24-48 hours or until stable",
+          "contraindications": [],
+          "side_effects": ["Fluid overload if excessive"],
+          "cost_usd": 2.0
+        }
+      ],
+      "duration": "2-3 days minimum",
+      "follow_up": "Monitor vitals every 1-2 hours, hematocrit every 6-12 hours",
+      "special_considerations": [
+        "Titrate IV fluids based on clinical response",
+        "If hematocrit stable and improving: reduce fluids to 3-5 mL/kg/h",
+        "If hematocrit rising: increase fluids to 5-10 mL/kg/h",
+        "Watch for fluid overload: stop IV when hematocrit normalizing and adequate oral intake"
+      ]
+    },
+    {
+      "step_number": 4,
+      "title": "Group C: Severe Dengue (ICU)",
+      "description": "For dengue shock syndrome or severe organ impairment",
+      "medications": [
+        {
+          "name": "IV Crystalloid Bolus",
+          "generic_name": "normal saline or Ringer's lactate",
+          "dosage": "10-20 mL/kg over 15-30 minutes",
+          "route": "IV",
+          "frequency": "Repeat up to 3 times if needed",
+          "duration": "Until shock reverses",
+          "contraindications": [],
+          "side_effects": ["Pulmonary edema if excessive"],
+          "cost_usd": 5.0
+        },
+        {
+          "name": "Platelet Transfusion",
+          "generic_name": "platelet concentrate",
+          "dosage": "1 unit per 10 kg body weight",
+          "route": "IV",
+          "frequency": "As needed",
+          "duration": "Only if platelets < 10,000 with bleeding",
+          "contraindications": [],
+          "side_effects": ["Transfusion reactions"],
+          "cost_usd": 50.0
+        }
+      ],
+      "duration": "3-7 days ICU stay",
+      "follow_up": "Hourly vital signs, hematocrit every 4-6 hours",
+      "special_considerations": [
+        "If shock persists after 3rd bolus: consider colloid (albumin or plasma)",
+        "Do NOT give platelets prophylactically (only if < 10,000 with bleeding)",
+        "Monitor for complications: pulmonary edema, ARDS, acute liver failure",
+        "Avoid over-resuscitation: causes pulmonary edema"
+      ]
+    }
+  ],
+  "differential_diagnosis": [
+    {
+      "condition": "Malaria",
+      "icd10_code": "B54",
+      "distinguishing_features": [
+        "Positive malaria RDT or smear",
+        "Less severe myalgia/arthralgia",
+        "Responds to antimalarials",
+        "No rash typically"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Chikungunya",
+      "icd10_code": "A92.0",
+      "distinguishing_features": [
+        "Severe arthralgia (worse than dengue)",
+        "Joint pain can persist for months",
+        "Less severe thrombocytopenia",
+        "IgM positive for chikungunya"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Influenza",
+      "icd10_code": "J11.1",
+      "distinguishing_features": [
+        "Respiratory symptoms prominent",
+        "Seasonal pattern",
+        "No significant thrombocytopenia",
+        "Positive influenza test"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Leptospirosis",
+      "icd10_code": "A27.9",
+      "distinguishing_features": [
+        "Conjunctival suffusion",
+        "Exposure to contaminated water",
+        "Kidney and liver involvement",
+        "Positive leptospira serology"
+      ],
+      "prevalence": "uncommon"
+    }
+  ],
+  "complications": [
+    {
+      "name": "Dengue hemorrhagic fever",
+      "icd10_code": "A91",
+      "risk_factors": ["Secondary dengue infection", "Age < 15 years", "Female gender"],
+      "prevention": "Early recognition and fluid management",
+      "management": "Aggressive IV fluid resuscitation, platelet transfusion if severe bleeding"
+    },
+    {
+      "name": "Dengue shock syndrome",
+      "icd10_code": "A91",
+      "risk_factors": ["Severe plasma leakage", "Delayed presentation", "Comorbidities"],
+      "prevention": "Timely IV fluid therapy when warning signs appear",
+      "management": "Crystalloid bolus 10-20 mL/kg, repeat up to 3 times, then colloid if needed"
+    },
+    {
+      "name": "Acute liver failure",
+      "risk_factors": ["Severe dengue", "Pre-existing liver disease"],
+      "prevention": "Avoid hepatotoxic drugs (aspirin, NSAIDs)",
+      "management": "Supportive care, may require liver transplant if fulminant"
+    },
+    {
+      "name": "Encephalopathy",
+      "risk_factors": ["Severe dengue", "Liver failure", "Electrolyte imbalance"],
+      "prevention": "Maintain adequate perfusion, correct metabolic abnormalities",
+      "management": "Supportive ICU care, treat underlying cause"
+    }
+  ],
+  "prevention": [
+    {
+      "type": "primary",
+      "intervention": "Vector control (eliminate mosquito breeding sites)",
+      "target_population": "All residents in dengue-endemic areas",
+      "effectiveness": "Removing stagnant water reduces Aedes mosquito population by 70-90%"
+    },
+    {
+      "type": "primary",
+      "intervention": "Personal protection (repellents, long sleeves, bed nets)",
+      "target_population": "Individuals in endemic areas during outbreaks",
+      "effectiveness": "DEET-based repellents reduce bites by 80-90%"
+    },
+    {
+      "type": "primary",
+      "intervention": "Dengue vaccine (Dengvaxia, TAK-003)",
+      "target_population": "Individuals 9-45 years with previous dengue infection",
+      "effectiveness": "Reduces severe dengue by 80%, only for seropositive individuals"
+    },
+    {
+      "type": "secondary",
+      "intervention": "Early case detection and management",
+      "target_population": "All suspected dengue cases",
+      "effectiveness": "Reduces mortality from 20% to < 1% with proper fluid management"
+    }
+  ],
+  "references": [
+    {
+      "title": "WHO Dengue Guidelines for diagnosis, treatment, prevention and control",
+      "source": "WHO",
+      "url": "https://www.who.int/publications/i/item/9789241547871",
+      "year": 2009,
+      "evidence_level": "A"
+    },
+    {
+      "title": "Comprehensive guideline for prevention and control of dengue and dengue haemorrhagic fever",
+      "source": "WHO SEARO",
+      "url": "https://apps.who.int/iris/handle/10665/204894",
+      "year": 2011,
+      "evidence_level": "A"
+    },
+    {
+      "title": "CDC Dengue Clinical Guidance",
+      "source": "CDC",
+      "url": "https://www.cdc.gov/dengue/healthcare-providers/clinical-presentation.html",
+      "year": 2023,
+      "evidence_level": "A"
+    }
+  ]
+}

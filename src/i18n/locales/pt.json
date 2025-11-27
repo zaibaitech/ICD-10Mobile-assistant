@@ -1,0 +1,67 @@
+{
+  "common": {
+    "search": "Pesquisar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "clear": "Limpar",
+    "copy": "Copiar",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "confirm": "Confirmar",
+    "back": "Voltar"
+  },
+  "dashboard": {
+    "goodMorning": "Bom Dia",
+    "goodAfternoon": "Boa Tarde",
+    "goodEvening": "Boa Noite",
+    "todayOverview": "Visão Geral de Hoje",
+    "quickActions": "Ações Rápidas",
+    "searchCodes": "Pesquisar Códigos CID-10",
+    "searchCodesDesc": "Encontre códigos de diagnóstico rapidamente",
+    "aiAssistant": "Assistente de Documentação IA",
+    "aiAssistantDesc": "Obtenha sugestões de codificação",
+    "patients": "Gestão de Pacientes",
+    "patientsDesc": "Visualizar e gerenciar pacientes",
+    "currentVisit": "Nota de Visita Atual",
+    "codesAdded": "códigos adicionados",
+    "activeCodes": "Códigos Ativos",
+    "encounters": "Consultas",
+    "favorites": "Favoritos",
+    "currentVisitSummary": "Visita Atual",
+    "viewAll": "Ver Tudo",
+    "diagnosisCodes": "códigos de diagnóstico",
+    "readyToDocument": "Pronto para documentar",
+    "tipMessage": "Dica: Use o Assistente IA para sugestões rápidas de código baseadas em notas clínicas"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Cadastrar",
+    "logout": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar Senha",
+    "dontHaveAccount": "Não tem uma conta?",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "signInHere": "Entrar",
+    "signUpHere": "Cadastrar"
+  },
+  "navigation": {
+    "search": "Pesquisar",
+    "assistant": "Assistente",
+    "favorites": "Favoritos",
+    "visit": "Visita",
+    "profile": "Perfil"
+  },
+  "search": {
+    "title": "Pesquisa CID-10",
+    "placeholder": "Pesquisar códigos ou descrições...",
+    "filterByChapter": "Filtrar por Capítulo",
+    "allChapters": "Todos os Capítulos",
+    "noResults": "Nenhum código encontrado",
+    "tryDifferentSearch": "Tente um termo de pesquisa diferente"
+  }
+}

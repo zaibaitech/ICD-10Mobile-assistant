@@ -1,0 +1,303 @@
+{
+  "disease_name": "Malaria",
+  "icd10_codes": ["B50", "B51", "B52", "B53", "B54"],
+  "red_flags": [
+    {
+      "symptom": "Altered consciousness or seizures",
+      "severity": "critical",
+      "action": "Immediate IV artesunate and referral to hospital",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Severe anemia (Hb < 5 g/dL)",
+      "severity": "critical",
+      "action": "Blood transfusion + antimalarial treatment",
+      "timeframe": "within 1 hour"
+    },
+    {
+      "symptom": "Jaundice with dark urine",
+      "severity": "high",
+      "action": "Check for severe malaria, IV fluids, antimalarials",
+      "timeframe": "within 1 hour"
+    },
+    {
+      "symptom": "Respiratory distress or pulmonary edema",
+      "severity": "critical",
+      "action": "Oxygen therapy, IV artesunate, careful fluid management",
+      "timeframe": "immediate"
+    },
+    {
+      "symptom": "Hypoglycemia (blood glucose < 2.2 mmol/L)",
+      "severity": "critical",
+      "action": "IV glucose bolus + infusion, IV antimalarials",
+      "timeframe": "immediate"
+    }
+  ],
+  "diagnostic_criteria": [
+    {
+      "category": "clinical",
+      "criteria": [
+        "Fever or history of fever in past 48 hours",
+        "No other obvious cause of fever",
+        "Residence in or travel to malaria-endemic area"
+      ],
+      "minimum_required": 2,
+      "specificity": 0.4,
+      "sensitivity": 0.8
+    },
+    {
+      "category": "laboratory",
+      "criteria": [
+        "Positive malaria rapid diagnostic test (RDT)",
+        "Positive thick/thin blood smear with parasites visible",
+        "PCR positive for Plasmodium species"
+      ],
+      "minimum_required": 1,
+      "specificity": 0.95,
+      "sensitivity": 0.92
+    }
+  ],
+  "treatment_algorithm": [
+    {
+      "step_number": 1,
+      "title": "Assess Severity",
+      "description": "Determine if uncomplicated or severe malaria based on WHO criteria",
+      "medications": [],
+      "duration": "5-10 minutes",
+      "follow_up": "Immediate decision on treatment pathway",
+      "special_considerations": [
+        "Severe malaria: any danger sign (prostration, seizures, altered consciousness, jaundice, respiratory distress, severe anemia)",
+        "Pregnancy requires different drug regimens",
+        "Children < 5 years at higher risk"
+      ]
+    },
+    {
+      "step_number": 2,
+      "title": "Uncomplicated Malaria Treatment",
+      "description": "For patients without danger signs",
+      "medications": [
+        {
+          "name": "Artemether-Lumefantrine (Coartem)",
+          "generic_name": "artemether-lumefantrine",
+          "dosage": "4 tablets (20mg/120mg) for adults, weight-based for children",
+          "route": "oral",
+          "frequency": "Twice daily at 0, 8, 24, 36, 48, 60 hours",
+          "duration": "3 days",
+          "contraindications": ["First trimester pregnancy", "Known allergy"],
+          "side_effects": ["Headache", "Dizziness", "Nausea", "Palpitations"],
+          "cost_usd": 2.5
+        },
+        {
+          "name": "Artesunate-Amodiaquine (ASAQ)",
+          "generic_name": "artesunate-amodiaquine",
+          "dosage": "Weight-based: 25-100mg artesunate + 67.5-270mg amodiaquine",
+          "route": "oral",
+          "frequency": "Once daily",
+          "duration": "3 days",
+          "contraindications": ["Known allergy to 4-aminoquinolines"],
+          "side_effects": ["Nausea", "Vomiting", "Dizziness"],
+          "cost_usd": 1.8
+        }
+      ],
+      "duration": "3 days",
+      "follow_up": "Day 3: Check if fever cleared. Day 28: Check for recurrence",
+      "special_considerations": [
+        "Take with food or milk to improve absorption",
+        "Complete full 3-day course even if feeling better",
+        "Pregnant women: Use artesunate-based ACT after first trimester"
+      ]
+    },
+    {
+      "step_number": 3,
+      "title": "Severe Malaria Treatment",
+      "description": "For patients with danger signs - REFER TO HOSPITAL",
+      "medications": [
+        {
+          "name": "Artesunate IV",
+          "generic_name": "artesunate",
+          "dosage": "2.4 mg/kg IV at 0, 12, 24 hours, then daily",
+          "route": "IV",
+          "frequency": "Loading: 0, 12, 24h, then daily",
+          "duration": "Minimum 24 hours, then switch to oral ACT for 3 days",
+          "contraindications": [],
+          "side_effects": ["Delayed hemolysis (monitor for 4 weeks)"],
+          "cost_usd": 15.0
+        },
+        {
+          "name": "Artemether IM (if IV not available)",
+          "generic_name": "artemether",
+          "dosage": "3.2 mg/kg IM loading, then 1.6 mg/kg daily",
+          "route": "IM",
+          "frequency": "Loading dose, then daily",
+          "duration": "Minimum 24 hours, then oral ACT",
+          "contraindications": [],
+          "side_effects": ["Injection site pain"],
+          "cost_usd": 8.0
+        }
+      ],
+      "duration": "Minimum 7 days total (IV + oral)",
+      "follow_up": "Daily monitoring until stable, weekly for 4 weeks",
+      "special_considerations": [
+        "Monitor glucose every 4-6 hours",
+        "Careful fluid management (avoid overload)",
+        "Check hemoglobin weekly for delayed hemolysis",
+        "Pre-referral treatment: Give IM artemether or rectal artesunate"
+      ]
+    },
+    {
+      "step_number": 4,
+      "title": "Supportive Care",
+      "description": "Manage symptoms and complications",
+      "medications": [
+        {
+          "name": "Paracetamol",
+          "generic_name": "acetaminophen",
+          "dosage": "15 mg/kg for children, 500-1000mg for adults",
+          "route": "oral",
+          "frequency": "Every 6 hours as needed",
+          "duration": "Until fever resolves",
+          "contraindications": ["Severe liver disease"],
+          "side_effects": ["Rare: liver toxicity at high doses"],
+          "cost_usd": 0.05
+        }
+      ],
+      "duration": "As needed",
+      "follow_up": "Monitor temperature 4-hourly",
+      "special_considerations": [
+        "Tepid sponging for high fever",
+        "Oral rehydration solution for dehydration",
+        "DO NOT use aspirin (risk of Reye's syndrome in children)"
+      ]
+    }
+  ],
+  "differential_diagnosis": [
+    {
+      "condition": "Typhoid fever",
+      "icd10_code": "A01.0",
+      "distinguishing_features": [
+        "Step-ladder fever pattern",
+        "Relative bradycardia",
+        "Rose spots on abdomen",
+        "Positive blood culture"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Dengue fever",
+      "icd10_code": "A90",
+      "distinguishing_features": [
+        "Severe headache and retro-orbital pain",
+        "Thrombocytopenia",
+        "Positive tourniquet test",
+        "Recent travel to dengue area"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Viral upper respiratory infection",
+      "icd10_code": "J06.9",
+      "distinguishing_features": [
+        "Cough, sore throat, runny nose",
+        "No severe symptoms",
+        "Self-limiting in 5-7 days"
+      ],
+      "prevalence": "common"
+    },
+    {
+      "condition": "Bacterial meningitis",
+      "icd10_code": "G00.9",
+      "distinguishing_features": [
+        "Severe headache with neck stiffness",
+        "Photophobia",
+        "Positive Kernig's or Brudzinski's sign",
+        "Altered consciousness"
+      ],
+      "prevalence": "uncommon"
+    }
+  ],
+  "complications": [
+    {
+      "name": "Cerebral malaria",
+      "icd10_code": "B50.0",
+      "risk_factors": ["P. falciparum infection", "Delayed treatment", "Young children"],
+      "prevention": "Early diagnosis and treatment with effective antimalarials",
+      "management": "IV artesunate, supportive ICU care, manage seizures"
+    },
+    {
+      "name": "Severe malarial anemia",
+      "icd10_code": "D63.8",
+      "risk_factors": ["Repeated infections", "Malnutrition", "HIV co-infection"],
+      "prevention": "Insecticide-treated bed nets, chemoprevention in pregnancy",
+      "management": "Blood transfusion if Hb < 5 g/dL, antimalarials, iron supplementation"
+    },
+    {
+      "name": "Acute kidney injury",
+      "icd10_code": "N17.9",
+      "risk_factors": ["Severe P. falciparum", "Dehydration", "Hemolysis"],
+      "prevention": "Adequate hydration, early treatment",
+      "management": "IV fluids, monitor urine output, consider dialysis"
+    },
+    {
+      "name": "Pulmonary edema/ARDS",
+      "icd10_code": "J81.0",
+      "risk_factors": ["Severe malaria", "Fluid overload", "Pregnancy"],
+      "prevention": "Careful fluid management, avoid overhydration",
+      "management": "Oxygen, diuretics, mechanical ventilation if needed"
+    }
+  ],
+  "prevention": [
+    {
+      "type": "primary",
+      "intervention": "Long-lasting insecticide-treated bed nets (LLINs)",
+      "target_population": "All residents in endemic areas, especially children and pregnant women",
+      "effectiveness": "Reduces malaria incidence by 50%, all-cause mortality in children by 20%"
+    },
+    {
+      "type": "primary",
+      "intervention": "Indoor residual spraying (IRS)",
+      "target_population": "High-transmission areas",
+      "effectiveness": "Reduces transmission by 60-90% when well-implemented"
+    },
+    {
+      "type": "primary",
+      "intervention": "Intermittent preventive treatment in pregnancy (IPTp)",
+      "target_population": "All pregnant women in endemic areas",
+      "effectiveness": "Sulfadoxine-pyrimethamine monthly from 2nd trimester reduces placental malaria by 30%"
+    },
+    {
+      "type": "primary",
+      "intervention": "Seasonal malaria chemoprevention (SMC)",
+      "target_population": "Children 3-59 months in Sahel region",
+      "effectiveness": "Monthly SP+AQ during transmission season reduces cases by 75%"
+    },
+    {
+      "type": "secondary",
+      "intervention": "Early diagnosis and treatment",
+      "target_population": "All suspected malaria cases",
+      "effectiveness": "Prevents progression to severe malaria, reduces transmission"
+    }
+  ],
+  "references": [
+    {
+      "title": "WHO Guidelines for malaria treatment",
+      "source": "WHO",
+      "url": "https://www.who.int/publications/i/item/guidelines-for-malaria",
+      "year": 2023,
+      "evidence_level": "A"
+    },
+    {
+      "title": "Management of severe malaria: A practical handbook",
+      "source": "WHO",
+      "url": "https://www.who.int/publications/i/item/9789241548526",
+      "year": 2012,
+      "evidence_level": "A"
+    },
+    {
+      "title": "CDC Malaria Treatment Guidelines",
+      "source": "CDC",
+      "url": "https://www.cdc.gov/malaria/diagnosis_treatment/treatment.html",
+      "year": 2023,
+      "evidence_level": "A"
+    }
+  ]
+}

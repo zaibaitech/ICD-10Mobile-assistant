@@ -1,0 +1,67 @@
+{
+  "common": {
+    "search": "بحث",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "clear": "مسح",
+    "copy": "نسخ",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "loading": "جارٍ التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "confirm": "تأكيد",
+    "back": "رجوع"
+  },
+  "dashboard": {
+    "goodMorning": "صباح الخير",
+    "goodAfternoon": "مساء الخير",
+    "goodEvening": "مساء الخير",
+    "todayOverview": "نظرة عامة على اليوم",
+    "quickActions": "إجراءات سريعة",
+    "searchCodes": "البحث عن رموز ICD-10",
+    "searchCodesDesc": "ابحث عن رموز التشخيص بسرعة",
+    "aiAssistant": "مساعد التوثيق بالذكاء الاصطناعي",
+    "aiAssistantDesc": "احصل على اقتراحات الترميز",
+    "patients": "إدارة المرضى",
+    "patientsDesc": "عرض وإدارة المرضى",
+    "currentVisit": "ملاحظة الزيارة الحالية",
+    "codesAdded": "تمت إضافة الرموز",
+    "activeCodes": "الرموز النشطة",
+    "encounters": "المواجهات",
+    "favorites": "المفضلة",
+    "currentVisitSummary": "الزيارة الحالية",
+    "viewAll": "عرض الكل",
+    "diagnosisCodes": "رموز التشخيص",
+    "readyToDocument": "جاهز للتوثيق",
+    "tipMessage": "نصيحة: استخدم مساعد الذكاء الاصطناعي للحصول على اقتراحات سريعة للرموز بناءً على الملاحظات السريرية"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signInHere": "تسجيل الدخول",
+    "signUpHere": "التسجيل"
+  },
+  "navigation": {
+    "search": "بحث",
+    "assistant": "مساعد",
+    "favorites": "المفضلة",
+    "visit": "زيارة",
+    "profile": "الملف الشخصي"
+  },
+  "search": {
+    "title": "بحث ICD-10",
+    "placeholder": "البحث عن الرموز أو الأوصاف...",
+    "filterByChapter": "التصفية حسب الفصل",
+    "allChapters": "جميع الفصول",
+    "noResults": "لم يتم العثور على رموز",
+    "tryDifferentSearch": "جرب مصطلح بحث مختلف"
+  }
+}

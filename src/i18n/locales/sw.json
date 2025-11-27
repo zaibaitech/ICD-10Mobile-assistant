@@ -1,0 +1,67 @@
+{
+  "common": {
+    "search": "Tafuta",
+    "cancel": "Ghairi",
+    "save": "Hifadhi",
+    "delete": "Futa",
+    "clear": "Safisha",
+    "copy": "Nakili",
+    "add": "Ongeza",
+    "remove": "Ondoa",
+    "loading": "Inapakia...",
+    "error": "Kosa",
+    "success": "Mafanikio",
+    "confirm": "Thibitisha",
+    "back": "Rudi"
+  },
+  "dashboard": {
+    "goodMorning": "Habari za Asubuhi",
+    "goodAfternoon": "Habari za Mchana",
+    "goodEvening": "Habari za Jioni",
+    "todayOverview": "Muhtasari wa Leo",
+    "quickActions": "Vitendo vya Haraka",
+    "searchCodes": "Tafuta Nambari za ICD-10",
+    "searchCodesDesc": "Tafuta nambari za uchunguzi haraka",
+    "aiAssistant": "Msaidizi wa AI wa Hati",
+    "aiAssistantDesc": "Pata mapendekezo ya usimbaji",
+    "patients": "Usimamizi wa Wagonjwa",
+    "patientsDesc": "Angalia na simamia wagonjwa",
+    "currentVisit": "Kidokezo cha Ziara ya Sasa",
+    "codesAdded": "nambari zimeongezwa",
+    "activeCodes": "Nambari Zinazotumika",
+    "encounters": "Mikutano",
+    "favorites": "Vipendwa",
+    "currentVisitSummary": "Ziara ya Sasa",
+    "viewAll": "Angalia Yote",
+    "diagnosisCodes": "nambari za uchunguzi",
+    "readyToDocument": "Tayari kwa hati",
+    "tipMessage": "Kidokezo: Tumia Msaidizi wa AI kupata mapendekezo ya haraka ya nambari kulingana na vidokezo vya kliniki"
+  },
+  "auth": {
+    "login": "Ingia",
+    "register": "Jisajili",
+    "logout": "Toka",
+    "email": "Barua Pepe",
+    "password": "Nywila",
+    "confirmPassword": "Thibitisha Nywila",
+    "dontHaveAccount": "Hauna akaunti?",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "signInHere": "Ingia",
+    "signUpHere": "Jisajili"
+  },
+  "navigation": {
+    "search": "Tafuta",
+    "assistant": "Msaidizi",
+    "favorites": "Vipendwa",
+    "visit": "Ziara",
+    "profile": "Wasifu"
+  },
+  "search": {
+    "title": "Utafutaji wa ICD-10",
+    "placeholder": "Tafuta nambari au maelezo...",
+    "filterByChapter": "Chuja kwa Sura",
+    "allChapters": "Sura Zote",
+    "noResults": "Hakuna nambari zilizopatikana",
+    "tryDifferentSearch": "Jaribu neno tofauti la utafutaji"
+  }
+}
