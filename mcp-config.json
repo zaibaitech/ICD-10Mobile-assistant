@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp",
+      "description": "Official Supabase MCP Server"
+    },
+    "icd10-assistant": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}"
+      },
+      "description": "ICD-10 Assistant Local MCP Server"
+    }
+  }
+}

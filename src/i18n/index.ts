@@ -5,8 +5,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import en from './locales/en.json';
 import fr from './locales/fr.json';
+import es from './locales/es.json';
 
 const LANGUAGE_KEY = '@icd10_language';
+
+// Supported languages
+export const SUPPORTED_LANGUAGES = ['en', 'fr', 'es'];
 
 // Get stored language or device language
 const getStoredLanguage = async (): Promise<string> => {
@@ -16,7 +20,7 @@ const getStoredLanguage = async (): Promise<string> => {
     
     // Default to device language if supported
     const deviceLang = Localization.getLocales()[0]?.languageCode || 'en';
-    return ['en', 'fr'].includes(deviceLang) ? deviceLang : 'en';
+    return SUPPORTED_LANGUAGES.includes(deviceLang) ? deviceLang : 'en';
   } catch {
     return 'en';
   }
@@ -42,6 +46,7 @@ const initI18n = async () => {
       resources: {
         en: { translation: en },
         fr: { translation: fr },
+        es: { translation: es },
       },
       lng: language,
       fallbackLng: 'en',

@@ -75,9 +75,13 @@ export const isFavorite = async (userId: string, icd10Id: string): Promise<boole
       .select('id')
       .eq('user_id', userId)
       .eq('icd10_id', icd10Id)
-      .single();
+      .maybeSingle(); // Use maybeSingle instead of single to avoid error when no rows
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+    if (error) {
+      console.error('Error checking favorite status:', error);
+      return false;
+    }
+    
     return !!data;
   } catch (error) {
     console.error('Error checking favorite status:', error);

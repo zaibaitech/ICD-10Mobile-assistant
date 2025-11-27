@@ -39,20 +39,62 @@ This is a Model Context Protocol (MCP) server for the ICD-10 Mobile Assistant, p
    npm start
    ```
 
-## VS Code Configuration
+## MCP Configuration
 
-To use this MCP server with Claude in VS Code, add it to your MCP settings:
+### Option 1: Official Supabase MCP (Recommended - HTTP)
 
-1. Open VS Code settings
-2. Search for "MCP"
-3. Add the server configuration:
+The easiest way is to use the official Supabase MCP server:
 
 ```json
 {
   "mcpServers": {
-    "icd10-supabase": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp"
+    }
+  }
+}
+```
+
+This connects to Supabase's hosted MCP server for all Supabase operations.
+
+### Option 2: Local ICD-10 MCP Server (Custom Tools)
+
+For custom ICD-10 specific tools, use the local server:
+
+```json
+{
+  "mcpServers": {
+    "icd10-assistant": {
+      "type": "stdio",
       "command": "node",
-      "args": ["d:/ICD10/ICD-10Mobile-assistant/mcp-server/dist/index.js"],
+      "args": ["mcp-server/dist/index.js"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "SUPABASE_URL": "your-supabase-url",
+        "SUPABASE_SERVICE_ROLE_KEY": "your-service-role-key"
+      }
+    }
+  }
+}
+```
+
+### Option 3: Both (Complete Setup)
+
+Use both for full functionality:
+
+```json
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp"
+    },
+    "icd10-assistant": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "cwd": "d:/ICD/ICD-10Mobile-assistant",
       "env": {
         "SUPABASE_URL": "your-supabase-url",
         "SUPABASE_SERVICE_ROLE_KEY": "your-service-role-key"

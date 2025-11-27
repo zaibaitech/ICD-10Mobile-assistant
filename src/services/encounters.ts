@@ -186,7 +186,7 @@ export const getEncounterCodes = async (encounterId: string): Promise<EncounterI
         id,
         code,
         short_title,
-        full_title,
+        long_description,
         chapter
       )
     `)
