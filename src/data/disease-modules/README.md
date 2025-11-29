@@ -1,150 +1,100 @@
-# Disease Modules
+# Disease Management Modules
 
-Clinical decision support protocols based on WHO/CDC free resources.
+Clinical decision support modules based on WHO guidelines. Each module is independently downloadable and works 100% offline.
 
 ## Available Modules
 
-### 1. Malaria (15KB)
-**ICD-10 Codes**: B50-B54
+### 1. Malaria Management (15KB)
+- **Based on**: WHO Malaria Treatment Guidelines
+- **ICD-10 Codes**: 9 codes (B50.0 - B54)
+- **Features**:
+  - Diagnostic criteria
+  - Differential diagnosis
+  - Treatment protocols (mild/moderate/severe)
+  - Red flags and emergency management
+  - Follow-up guidelines
+  - Prevention strategies
 
-**Content**:
-- Red flag symptoms requiring immediate action
-- Diagnostic criteria (clinical + laboratory)
-- Treatment algorithm (uncomplicated vs severe)
-- Artemisinin-based combination therapy (ACT) protocols
-- Differential diagnosis (typhoid, dengue, meningitis)
-- Complications management
-- Prevention strategies (bed nets, chemoprevention)
+### 2. Tuberculosis (TB) Management (12KB)
+- **Based on**: WHO TB Treatment Guidelines
+- **ICD-10 Codes**: 12 codes (A15.0 - A19.9)
+- **Features**:
+  - Pulmonary and extrapulmonary TB
+  - Drug-sensitive TB treatment (6-month regimen)
+  - MDR-TB considerations
+  - TB meningitis protocols
+  - Contact tracing
+  - Preventive therapy
 
-**Sources**: WHO Guidelines for malaria, CDC Malaria Treatment Guidelines
-
-### 2. Tuberculosis (18KB)
-**ICD-10 Codes**: A15-A19
-
-**Content**:
-- Red flag symptoms (hemoptysis, meningitis signs)
-- Diagnostic criteria (sputum, GeneXpert, chest X-ray)
-- Treatment phases (intensive 2 months + continuation 4 months)
-- RHZE fixed-dose combination protocols
-- MDR-TB recognition and referral
-- Differential diagnosis (pneumonia, lung cancer, PCP)
-- Complications (hepatitis, neuropathy, TB-IRIS)
-- Prevention (BCG, TPT for contacts)
-
-**Sources**: WHO TB Treatment Guidelines, CDC TB Guidelines
-
-### 3. Dengue Fever (16KB)
-**ICD-10 Codes**: A90-A91
-
-**Content**:
-- Warning signs of severe dengue
-- WHO 2009 classification (Groups A, B, C)
-- Fluid management protocols
-- Platelet transfusion criteria
-- Differential diagnosis (malaria, chikungunya, influenza)
-- Dengue shock syndrome management
-- Prevention (vector control, personal protection)
-
-**Sources**: WHO Dengue Guidelines, CDC Dengue Clinical Guidance
+### 3. Dengue Fever Management (10KB)
+- **Based on**: WHO Dengue Guidelines
+- **ICD-10 Codes**: 4 codes (A90, A91, A97.0, A97.1)
+- **Features**:
+  - Classification (without warnings, with warnings, severe)
+  - Fluid management protocols
+  - Shock management
+  - Warning signs monitoring
+  - Critical phase management (days 4-7)
+  - Vector control
 
 ## Usage
 
-### In the App
-
 ```typescript
-import { diseaseModuleService } from '@/services/diseaseModules';
+import { getModule, getAllModules } from './data/disease-modules';
 
-// Get available modules
-const modules = await diseaseModuleService.getAvailableModules();
+// Get specific module
+const malariaModule = getModule('malaria');
 
-// Download a module
-const malariaProtocol = await diseaseModuleService.downloadModule('malaria');
+// Get all modules
+const allModules = getAllModules();
 
-// Search by ICD code
-const protocols = await diseaseModuleService.searchByCode('B50');
-
-// Get locally downloaded modules
-const downloaded = await diseaseModuleService.getDownloadedModules();
+// Access module data
+console.log(malariaModule.icd10Codes);
+console.log(malariaModule.treatmentGuidelines.severe);
+console.log(malariaModule.redFlags);
 ```
-
-### Module Structure
-
-Each module contains:
-- **Red Flags**: Critical symptoms requiring immediate action
-- **Diagnostic Criteria**: Clinical, laboratory, and imaging findings
-- **Treatment Algorithm**: Step-by-step management protocols
-- **Medications**: Dosing, routes, contraindications, costs
-- **Differential Diagnosis**: Similar conditions to rule out
-- **Complications**: Recognition and management
-- **Prevention**: Primary, secondary, tertiary strategies
-- **References**: WHO/CDC evidence-based sources
-
-## Adding New Modules
-
-1. Create JSON file in `src/data/disease-modules/`
-2. Follow the existing structure (see `malaria.json`)
-3. Use only FREE data sources:
-   - WHO treatment guidelines
-   - CDC clinical protocols
-   - PubMed open-access articles
-4. Keep file size < 20KB for fast downloads
-5. Test on low-bandwidth connections
 
 ## Data Sources (All FREE)
 
-### WHO Resources
-- Treatment guidelines: https://www.who.int/publications
-- Disease surveillance: https://www.who.int/data
-- Clinical protocols: Creative Commons licensed
+1. **WHO - World Health Organization**
+   - Malaria Guidelines: https://www.who.int/publications/i/item/guidelines-for-malaria
+   - TB Guidelines: https://www.who.int/publications/i/item/9789240083851
+   - Dengue Guidelines: https://www.who.int/publications/i/item/9789241547871
+   - License: Public Domain
 
-### CDC Resources
-- Clinical guidelines: https://www.cdc.gov/
-- Disease information: Public domain
-- Treatment recommendations: Free access
+2. **CDC - Centers for Disease Control**
+   - Clinical protocols and treatment recommendations
+   - License: Public Domain (US Government)
 
-### PubMed
-- Open-access articles: https://pubmed.ncbi.nlm.nih.gov/
-- Clinical studies: Free full-text
-- Systematic reviews: Cochrane Library
+## Future Modules (Planned)
 
-## Offline Storage
-
-Modules are stored locally using AsyncStorage:
-- Small file sizes (10-20KB each)
-- No internet required after download
-- Survives app restarts
-- Can be deleted individually to save space
-
-## Future Modules
-
-**High Priority**:
-- HIV/AIDS (B20-B24)
-- Maternal Health (O00-O99)
-- Childhood Pneumonia (J12-J18)
-- Diarrheal Diseases (A00-A09)
-- Malnutrition (E40-E46)
-
-**Medium Priority**:
-- Mental Health (F00-F99)
-- Hypertension (I10-I15)
-- Diabetes (E10-E14)
-- Snake Bites (T63)
-- Trauma (S00-T14)
+- HIV/AIDS Management
+- Maternal Health Protocols
+- Child Health Integrated Management (IMCI)
+- Snakebite Management
+- Diabetic Emergencies
+- Hypertensive Emergencies
 
 ## Contributing
 
 To add a new disease module:
 
-1. Identify FREE data sources (WHO, CDC, PubMed)
-2. Create JSON following existing structure
-3. Include all required sections
-4. Add references with evidence levels
-5. Test on mobile devices
-6. Submit pull request
+1. Create a new file in `src/data/disease-modules/`
+2. Follow the `DiseaseModule` interface structure
+3. Base content on WHO/CDC free guidelines
+4. Keep file size <20KB for offline efficiency
+5. Include proper attribution and license
 
 ## License
 
-All disease modules use data from public domain or Creative Commons sources.
-Individual references retain their original licenses (cited in each module).
+MIT License - Free to use, modify, and distribute
 
-This work is licensed under MIT License - free for any use.
+## Medical Disclaimer
+
+These modules are documentation and education tools only. They do NOT replace:
+- Clinical judgment
+- Local treatment protocols
+- Specialist consultation
+- Laboratory confirmation
+
+Always follow your country's national guidelines and local protocols.

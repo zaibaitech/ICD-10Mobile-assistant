@@ -12,19 +12,31 @@ export interface AuthResponse {
  */
 export const signUp = async (email: string, password: string): Promise<AuthResponse> => {
   try {
+    console.log('📝 Attempting sign up for:', email);
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Sign up error:', {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      });
+      throw error;
+    }
 
+    console.log('✅ Sign up successful. User:', data.user?.email, 'Confirmed:', data.user?.email_confirmed_at ? 'Yes' : 'No');
+    
     return {
       user: data.user,
       session: data.session,
       error: null,
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error('❌ Sign up failed:', error);
     return {
       user: null,
       session: null,
@@ -38,19 +50,30 @@ export const signUp = async (email: string, password: string): Promise<AuthRespo
  */
 export const signIn = async (email: string, password: string): Promise<AuthResponse> => {
   try {
+    console.log('🔐 Attempting sign in for:', email);
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Sign in error:', {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+      });
+      throw error;
+    }
 
+    console.log('✅ Sign in successful for:', email);
     return {
       user: data.user,
       session: data.session,
       error: null,
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error('❌ Sign in failed:', error);
     return {
       user: null,
       session: null,

@@ -11,9 +11,14 @@ import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { VisitCodeItem } from '../components/VisitCodeItem';
 import { useVisit } from '../context/VisitContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 export const VisitNoteScreen: React.FC = () => {
   const { visitCodes, removeCodeFromVisit, clearVisit } = useVisit();
+  const insets = useSafeAreaInsets();
+  const listBottomPadding = useBottomSpacing(40);
+  const footerBottomInset = Math.max(insets.bottom, 16);
 
   const formatVisitNote = (): string => {
     if (visitCodes.length === 0) {
@@ -71,15 +76,15 @@ export const VisitNoteScreen: React.FC = () => {
         <>
           <FlatList
             data={visitCodes}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.code}
             renderItem={({ item }) => (
-              <VisitCodeItem code={item} onRemove={() => removeCodeFromVisit(item.id)} />
+              <VisitCodeItem code={item} onRemove={() => removeCodeFromVisit(item.code)} />
             )}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[styles.listContent, { paddingBottom: listBottomPadding }]}
             style={styles.list}
           />
 
-          <View style={styles.footer}>
+          <View style={[styles.footer, { paddingBottom: footerBottomInset }]}>
             <View style={styles.previewContainer}>
               <Text style={styles.previewLabel}>Note Preview:</Text>
               <Text style={styles.previewText}>{formatVisitNote()}</Text>

@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { ScreenContainer } from '../components/ScreenContainer';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/theme';
+import { SurfaceCard } from '../components/SurfaceCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getPatientById, calculateAge, deletePatient } from '../services/patients';
 import { getEncountersByPatient } from '../services/encounters';
 import { Patient, Encounter, PatientsStackParamList } from '../types';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 type NavigationProp = NativeStackNavigationProp<PatientsStackParamList, 'PatientDetail'>;
 type RouteParams = RouteProp<PatientsStackParamList, 'PatientDetail'>;
@@ -26,6 +29,7 @@ export const PatientDetailScreen: React.FC = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [encounters, setEncounters] = useState<Encounter[]>([]);
   const [loading, setLoading] = useState(true);
+  const bottomPadding = useBottomSpacing();
 
   useEffect(() => {
     loadPatientData();
@@ -74,10 +78,23 @@ export const PatientDetailScreen: React.FC = () => {
     navigation.navigate('EncounterForm', { patientId });
   };
 
+  const getRiskColor = (level: Encounter['ai_risk_level']) => {
+    switch (level) {
+      case 'high':
+        return Colors.riskHigh;
+      case 'moderate':
+        return Colors.riskModerate;
+      case 'low':
+        return Colors.riskLow;
+      default:
+        return Colors.border;
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={Colors.primary} />
       </View>
     );
   }
@@ -93,11 +110,15 @@ export const PatientDetailScreen: React.FC = () => {
   const age = calculateAge(patient.year_of_birth);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScreenContainer
+      scrollable
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
+    >
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <View style={styles.iconContainer}>
-            <Ionicons name="person" size={40} color="#007AFF" />
+        <Ionicons name="person" size={40} color={Colors.primary} />
           </View>
           <View style={styles.headerText}>
             <Text style={styles.patientName}>{patient.display_label}</Text>
@@ -112,33 +133,41 @@ export const PatientDetailScreen: React.FC = () => {
         <TouchableOpacity
           style={styles.deleteButton}
           onPress={handleDeletePatient}
+          accessibilityRole="button"
+          accessibilityLabel="Delete patient"
         >
-          <Ionicons name="trash-outline" size={20} color="#F44336" />
+          <Ionicons name="trash-outline" size={20} color={Colors.danger} />
         </TouchableOpacity>
       </View>
 
       {patient.notes && (
-        <View style={styles.section}>
+        <SurfaceCard style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Notes</Text>
           <Text style={styles.notesText}>{patient.notes}</Text>
-        </View>
+        </SurfaceCard>
       )}
 
-      <View style={styles.section}>
+      <SurfaceCard style={styles.sectionCard}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Encounters ({encounters.length})</Text>
           <TouchableOpacity
             style={styles.newEncounterButton}
             onPress={handleNewEncounter}
+            accessibilityRole="button"
+            accessibilityLabel="Create new encounter"
           >
-            <Ionicons name="add" size={20} color="#FFFFFF" />
+            <Ionicons name="add" size={20} color={Colors.surface} />
             <Text style={styles.newEncounterText}>New Encounter</Text>
           </TouchableOpacity>
         </View>
 
         {encounters.length === 0 ? (
           <View style={styles.emptyEncounters}>
-            <Ionicons name="document-text-outline" size={48} color="#CCC" />
+            <Ionicons
+              name="document-text-outline"
+              size={48}
+              color={Colors.textTertiary}
+            />
             <Text style={styles.emptyText}>No encounters yet</Text>
             <Text style={styles.emptySubtext}>
               Create an encounter to document a clinical visit
@@ -153,6 +182,10 @@ export const PatientDetailScreen: React.FC = () => {
                 onPress={() =>
                   navigation.navigate('EncounterDetail', { encounterId: encounter.id })
                 }
+                accessibilityRole="button"
+                accessibilityLabel={`Encounter on ${new Date(
+                  encounter.encounter_date
+                ).toLocaleDateString()}`}
               >
                 <View style={styles.encounterHeader}>
                   <Text style={styles.encounterDate}>
@@ -162,14 +195,7 @@ export const PatientDetailScreen: React.FC = () => {
                     <View
                       style={[
                         styles.riskIndicator,
-                        {
-                          backgroundColor:
-                            encounter.ai_risk_level === 'high'
-                              ? '#F44336'
-                              : encounter.ai_risk_level === 'moderate'
-                              ? '#FF9800'
-                              : '#4CAF50',
-                        },
+                        { backgroundColor: getRiskColor(encounter.ai_risk_level) },
                       ]}
                     />
                   )}
@@ -186,33 +212,34 @@ export const PatientDetailScreen: React.FC = () => {
             ))}
           </View>
         )}
-      </View>
-    </ScrollView>
+      </SurfaceCard>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: Colors.background,
   },
   errorText: {
-    fontSize: 16,
-    color: '#999',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
   },
   header: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
+    backgroundColor: Colors.surface,
+    padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.border,
   },
   headerContent: {
     flexDirection: 'row',
@@ -223,102 +250,101 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: Colors.primaryTransparent,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: Spacing.lg,
   },
   headerText: {
     flex: 1,
   },
   patientName: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#333',
-    marginBottom: 4,
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   patientInfo: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing.sm,
   },
   infoText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
   },
   deleteButton: {
-    padding: 8,
+    padding: Spacing.xs,
   },
-  section: {
-    backgroundColor: '#FFFFFF',
-    marginTop: 12,
-    padding: 16,
+  sectionCard: {
+    marginTop: Spacing.md,
+    marginHorizontal: Spacing.lg,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing.md,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#333',
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
   },
   notesText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
     lineHeight: 20,
   },
   newEncounterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 4,
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    gap: Spacing.xs,
   },
   newEncounterText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.surface,
   },
   emptyEncounters: {
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingVertical: Spacing.xl,
   },
   emptyText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#999',
-    marginTop: 12,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textSecondary,
+    marginTop: Spacing.sm,
   },
   emptySubtext: {
-    fontSize: 13,
-    color: '#BBB',
-    marginTop: 4,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textTertiary,
+    marginTop: Spacing.xs,
     textAlign: 'center',
   },
   encountersList: {
-    gap: 10,
+    gap: Spacing.sm,
   },
   encounterCard: {
-    backgroundColor: '#F9F9F9',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: Colors.background,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: Colors.border,
   },
   encounterHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: Spacing.xs,
   },
   encounterDate: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#007AFF',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.primary,
   },
   riskIndicator: {
     width: 10,
@@ -326,14 +352,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   chiefComplaint: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   aiSummary: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
     fontStyle: 'italic',
   },
 });

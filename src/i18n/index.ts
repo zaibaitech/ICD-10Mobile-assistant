@@ -10,7 +10,7 @@ import es from './locales/es.json';
 const LANGUAGE_KEY = '@icd10_language';
 
 // Supported languages
-export const SUPPORTED_LANGUAGES = ['en', 'fr', 'es'];
+const SUPPORTED_LANGUAGES = ['en', 'fr', 'es'];
 
 // Get stored language or device language
 const getStoredLanguage = async (): Promise<string> => {

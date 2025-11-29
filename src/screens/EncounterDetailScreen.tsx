@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { getEncounterById, updateEncounter, addCodeToEncounter, getEncounterCodes } from '../services/encounters';
 import { getPatientById, calculateAge } from '../services/patients';
-import { analyzeEncounter, logAnalysis } from '../services/clinicalReasoner';
+import { analyzeEncounter } from '../services/clinicalReasoner';
 import { useAuth } from '../context/AuthContext';
 import { searchIcd10 } from '../services/icd10';
 import {
@@ -26,6 +26,23 @@ import { ResearchModeBanner } from '../components/ResearchModeBanner';
 import { RiskBadge } from '../components/RiskBadge';
 import { RedFlagAlert } from '../components/RedFlagAlert';
 import { PossibleConditionCard } from '../components/PossibleConditionCard';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
+import { logClinicalAnalysis, saveAiResult } from '../services/logging';
+
+const buildAiSummary = (result: ClinicalAnalysisResult): string => {
+  const sections: string[] = [`Risk Level: ${result.risk_level.toUpperCase()}`];
+
+  if (result.red_flags.length > 0) {
+    sections.push(`Red Flags: ${result.red_flags.length} noted`);
+  }
+
+  if (result.possible_conditions.length > 0) {
+    const names = result.possible_conditions.map((condition) => condition.name).join(', ');
+    sections.push(`Possible Conditions: ${names}`);
+  }
+
+  return sections.join(' | ');
+};
 
 type RouteParams = RouteProp<PatientsStackParamList, 'EncounterDetail'>;
 
@@ -40,6 +57,7 @@ export const EncounterDetailScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<ClinicalAnalysisResult | null>(null);
+  const bottomPadding = useBottomSpacing();
 
   useEffect(() => {
     loadEncounterData();
@@ -79,36 +97,32 @@ export const EncounterDetailScreen: React.FC = () => {
 
     try {
       setAnalyzing(true);
-      const age = calculateAge(patient.year_of_birth);
-
-      const result = await analyzeEncounter({
-        patient: {
-          age,
-          sex: patient.sex,
-        },
-        encounter: {
-          chief_complaint: encounter.chief_complaint,
-          structured_data: encounter.structured_data,
-        },
-      });
+      const result = await analyzeEncounter(encounter, patient);
+      const summary = buildAiSummary(result);
 
       setAiResult(result);
+      setEncounter((current) =>
+        current
+          ? {
+              ...current,
+              ai_result: result,
+              ai_summary: summary,
+              ai_risk_level: result.risk_level,
+            }
+          : current
+      );
 
       // Update encounter with AI results
       await updateEncounter(encounterId, {
-        ai_result: result as any,
-        ai_summary: result.summary,
+        ai_result: result,
+        ai_summary: summary,
         ai_risk_level: result.risk_level,
       });
 
-      // Log the analysis
-      await logAnalysis(user.id, patient.id, encounterId, {
-        patient: { age, sex: patient.sex },
-        encounter: {
-          chief_complaint: encounter.chief_complaint,
-          structured_data: encounter.structured_data,
-        },
-      }, result);
+      await Promise.all([
+        logClinicalAnalysis({ userId: user.id, patient, encounter, result }),
+        saveAiResult({ userId: user.id, encounterId: encounter.id, analysis: result }),
+      ]);
 
       Alert.alert('Analysis Complete', 'AI analysis has been generated');
     } catch (error) {
@@ -157,7 +171,10 @@ export const EncounterDetailScreen: React.FC = () => {
   const age = calculateAge(patient.year_of_birth);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
+    >
       <ResearchModeBanner />
 
       <View style={styles.patientInfo}>
@@ -214,10 +231,10 @@ export const EncounterDetailScreen: React.FC = () => {
                   HR: {encounter.structured_data.vitals.heart_rate} bpm
                 </Text>
               )}
-              {encounter.structured_data.vitals.blood_pressure_systolic && (
+              {encounter.structured_data.vitals.bp_systolic && (
                 <Text style={styles.vitalItem}>
-                  BP: {encounter.structured_data.vitals.blood_pressure_systolic}/
-                  {encounter.structured_data.vitals.blood_pressure_diastolic || '?'}
+                  BP: {encounter.structured_data.vitals.bp_systolic}/
+                  {encounter.structured_data.vitals.bp_diastolic || '?'}
                 </Text>
               )}
             </View>
@@ -247,7 +264,9 @@ export const EncounterDetailScreen: React.FC = () => {
               <RiskBadge riskLevel={aiResult.risk_level} />
             </View>
 
-            <Text style={styles.aiSummary}>{aiResult.summary}</Text>
+            <Text style={styles.aiSummary}>
+              {encounter.ai_summary || buildAiSummary(aiResult)}
+            </Text>
 
             {aiResult.red_flags.length > 0 && (
               <RedFlagAlert redFlags={aiResult.red_flags} />

@@ -4,6 +4,7 @@ import { View, Text, ActivityIndicator, StyleSheet, Platform } from 'react-nativ
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from './src/context/AuthContext';
 import { VisitProvider } from './src/context/VisitContext';
+import { OfflineProvider } from './src/context/OfflineContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import './src/i18n'; // Initialize i18n
 
@@ -49,12 +50,14 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <VisitProvider>
-          <AppNavigator />
-          <StatusBar style="auto" />
-        </VisitProvider>
-      </AuthProvider>
+      <OfflineProvider>
+        <AuthProvider>
+          <VisitProvider>
+            <AppNavigator />
+            <StatusBar style="auto" />
+          </VisitProvider>
+        </AuthProvider>
+      </OfflineProvider>
     </SafeAreaProvider>
   );
 }

@@ -77,8 +77,25 @@ const KEYWORD_CODE_MAP: Record<string, SuggestedCode[]> = {
 
 /**
  * Get assistant reply based on user input
- * Supports vision analysis when imageUrl is provided
- * TODO: Replace with real AI integration in Phase 3 (OpenAI/Claude API)
+ * 
+ * ⚠️ IMPORTANT: This is a MOCK implementation using keyword matching only.
+ * It does NOT use real AI, machine learning, or natural language processing.
+ * 
+ * Current functionality:
+ * - Matches simple keywords to predefined ICD-10 codes
+ * - Does NOT analyze medical context or patient history
+ * - Does NOT analyze images (image analysis is placeholder UI only)
+ * - Does NOT provide clinical reasoning or diagnoses
+ * 
+ * To implement real AI, replace this with:
+ * - OpenAI GPT-4 API ($0.03 per 1K tokens) + Vision ($0.01-0.05 per image)
+ * - Anthropic Claude API with medical training
+ * - Azure Health Bot with HIPAA compliance
+ * - Custom fine-tuned medical LLM
+ * 
+ * @param message - User's text input
+ * @param context - Optional context (visit codes, image URL)
+ * @returns AssistantResponse with suggested codes
  */
 export const getAssistantReply = async (
   input: string,
@@ -130,8 +147,9 @@ export const getAssistantReply = async (
   const clarifyingQuestions: string[] = [];
   
   if (context.imageUrl) {
-    text = '📷 I can see you\'ve attached an image. ' + (suggestedCodes.length > 0 
-      ? 'Based on your description and the visual information, here are relevant ICD-10 codes:'
+    text = '⚠️ Note: Image analysis is not available. This is keyword-based matching only.\n\n' +
+           'I can see you\'ve attached an image. ' + (suggestedCodes.length > 0 
+      ? 'Based on your text description, here are relevant ICD-10 codes:'
       : 'Please describe what the image shows (e.g., location, appearance, symptoms) for accurate coding.');
     
     clarifyingQuestions.push('What is the location and extent of the presentation?');
@@ -175,11 +193,20 @@ export const getAssistantReply = async (
 
 /**
  * Transcribe audio to text
- * TODO: Integrate real speech-to-text API (Whisper, Google Cloud, Azure)
+ * 
+ * ⚠️ MOCK IMPLEMENTATION - Returns placeholder text only.
+ * Real implementation requires speech-to-text API:
+ * - OpenAI Whisper API ($0.006 per minute)
+ * - Google Cloud Speech-to-Text
+ * - Azure Speech Services
+ * - AssemblyAI (medical vocabulary optimized)
+ * 
+ * @param audioUri - Local URI of recorded audio file
+ * @returns Transcribed text (currently mock/placeholder)
  */
 export const transcribeAudio = async (audioUri: string): Promise<string> => {
   // Placeholder implementation
-  console.log('Transcribing audio from:', audioUri);
+  console.log('⚠️ MOCK: Transcribing audio from:', audioUri);
   
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1500));
@@ -192,7 +219,7 @@ export const transcribeAudio = async (audioUri: string): Promise<string> => {
   //   headers: { 'Authorization': `Bearer ${OPENAI_KEY}` }
   // });
   
-  return 'Patient presents with chest pain on exertion';
+  return '⚠️ MOCK TRANSCRIPTION: Patient presents with chest pain on exertion';
 };
 
 /**

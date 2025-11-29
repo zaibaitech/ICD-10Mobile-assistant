@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PossibleCondition } from '../types';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/theme';
+import { SurfaceCard } from './SurfaceCard';
 
 interface Props {
   condition: PossibleCondition;
@@ -9,24 +11,38 @@ interface Props {
 }
 
 const LIKELIHOOD_COLORS = {
-  low: '#9E9E9E',
-  medium: '#FF9800',
-  high: '#4CAF50',
-};
+  low: Colors.riskLow,
+  medium: Colors.riskModerate,
+  high: Colors.riskHigh,
+} as const;
+
+const LIKELIHOOD_BACKGROUND = {
+  low: 'rgba(46, 204, 113, 0.15)',
+  medium: 'rgba(243, 156, 18, 0.18)',
+  high: 'rgba(231, 76, 60, 0.15)',
+} as const;
 
 export const PossibleConditionCard: React.FC<Props> = ({ condition, onAddCode }) => {
   return (
-    <View style={styles.container}>
+    <SurfaceCard style={styles.card}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Text style={styles.name}>{condition.name}</Text>
           <View
             style={[
               styles.likelihoodBadge,
-              { backgroundColor: LIKELIHOOD_COLORS[condition.likelihood] },
+              {
+                backgroundColor: LIKELIHOOD_BACKGROUND[condition.likelihood],
+                borderColor: LIKELIHOOD_COLORS[condition.likelihood],
+              },
             ]}
           >
-            <Text style={styles.likelihoodText}>
+            <Text
+              style={[
+                styles.likelihoodText,
+                { color: LIKELIHOOD_COLORS[condition.likelihood] },
+              ]}
+            >
               {condition.likelihood.toUpperCase()}
             </Text>
           </View>
@@ -41,74 +57,74 @@ export const PossibleConditionCard: React.FC<Props> = ({ condition, onAddCode })
       )}
 
       {onAddCode && condition.icd10_code && (
-        <TouchableOpacity style={styles.addButton} onPress={onAddCode}>
-          <Ionicons name="add-circle" size={20} color="#007AFF" />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={onAddCode}
+          accessibilityRole="button"
+          accessibilityLabel={`Add ${condition.icd10_code} to encounter`}
+        >
+          <Ionicons name="add-circle" size={20} color={Colors.primary} />
           <Text style={styles.addButtonText}>Add to Encounter</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </SurfaceCard>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginVertical: 6,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+  card: {
+    padding: Spacing.lg,
+    marginVertical: Spacing.xs,
   },
   header: {
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: Spacing.xs,
   },
   name: {
     flex: 1,
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
-    marginRight: 8,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginRight: Spacing.sm,
   },
   likelihoodBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 3,
-    borderRadius: 10,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
   },
   likelihoodText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: Typography.fontSize.xs,
+    fontWeight: Typography.fontWeight.bold,
   },
   code: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.primary,
   },
   explanation: {
-    fontSize: 13,
-    color: '#666',
-    lineHeight: 18,
-    marginBottom: 8,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    lineHeight: 20,
+    marginBottom: Spacing.sm,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingTop: Spacing.sm,
+    marginTop: Spacing.xs,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    marginTop: 4,
+    borderTopColor: Colors.border,
   },
   addButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
-    marginLeft: 6,
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.primary,
+    marginLeft: Spacing.xs,
   },
 });

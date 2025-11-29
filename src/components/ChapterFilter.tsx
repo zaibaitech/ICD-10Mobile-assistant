@@ -20,6 +20,10 @@ export const ChapterFilter: React.FC<Props> = ({ chapters, selectedChapter, onSe
           key={chapter}
           style={[styles.chip, selectedChapter === chapter && styles.chipSelected]}
           onPress={() => onSelectChapter(chapter)}
+          accessibilityRole="button"
+          accessibilityState={{ selected: selectedChapter === chapter }}
+          accessibilityLabel={`Filter ${chapter}`}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text style={[styles.chipText, selectedChapter === chapter && styles.chipTextSelected]}>
             {chapter}
@@ -32,11 +36,13 @@ export const ChapterFilter: React.FC<Props> = ({ chapters, selectedChapter, onSe
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 50,
+    flexGrow: 0,
+    overflow: 'visible',
   },
   content: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingLeft: 20,
+    paddingRight: 24,
+    paddingVertical: 12,
   },
   chip: {
     backgroundColor: '#fff',

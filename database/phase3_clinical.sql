@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.encounters (
   structured_data JSONB DEFAULT '{}'::jsonb,
   ai_summary TEXT,
   ai_risk_level TEXT CHECK (ai_risk_level IN ('low', 'moderate', 'high', 'unknown')) DEFAULT 'unknown',
+  ai_result JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

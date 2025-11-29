@@ -14,6 +14,7 @@ import { ChatMessage } from '../components/ChatMessage';
 import { ChatInput } from '../components/ChatInput';
 import { RuleSuggestionCard } from '../components/RuleSuggestionCard';
 import { ImageAttachment } from '../components/ImageAttachment';
+import { ResearchModeBanner } from '../components/ResearchModeBanner';
 import { useVisitContext } from '../context/VisitContext';
 import { getAssistantReply, transcribeAudio } from '../services/assistant';
 import { getRuleSuggestions } from '../services/rules';
@@ -22,6 +23,8 @@ import { uploadImage } from '../services/storage';
 import { useAuth } from '../context/AuthContext';
 import { ChatMessage as ChatMessageType, SuggestedCode, RuleSuggestion } from '../types';
 import { Colors, Spacing, BorderRadius, Typography } from '../constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 export const AssistantScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -42,6 +45,10 @@ export const AssistantScreen: React.FC = () => {
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   
   const flatListRef = useRef<FlatList>(null);
+  const insets = useSafeAreaInsets();
+  const listBottomPadding = useBottomSpacing();
+  const inputBottomInset = Math.max(insets.bottom, 16);
+  const keyboardOffset = Platform.OS === 'ios' ? 90 : 60;
 
   // Check for rule suggestions when codes change
   useEffect(() => {
@@ -199,6 +206,8 @@ export const AssistantScreen: React.FC = () => {
 
   const renderHeader = () => (
     <>
+      <ResearchModeBanner />
+      
       <View style={styles.disclaimer}>
         <Text style={styles.disclaimerText}>{t('assistant.disclaimer')}</Text>
       </View>
@@ -235,14 +244,14 @@ export const AssistantScreen: React.FC = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={90}
+      keyboardVerticalOffset={keyboardOffset + inputBottomInset}
     >
       <FlatList
         ref={flatListRef}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.messageList}
+        contentContainerStyle={[styles.messageList, { paddingBottom: listBottomPadding }]}
         ListHeaderComponent={renderHeader}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
@@ -261,6 +270,7 @@ export const AssistantScreen: React.FC = () => {
         isLoading={isLoading}
         isRecording={isRecording}
         placeholder={t('assistant.inputPlaceholder')}
+        bottomInset={inputBottomInset}
       />
     </KeyboardAvoidingView>
   );
@@ -275,18 +285,19 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   disclaimer: {
-    backgroundColor: '#FFF3CD',
+    backgroundColor: '#FFE5E5',
     padding: Spacing.md,
     marginHorizontal: Spacing.md,
     marginVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     borderLeftWidth: 4,
-    borderLeftColor: Colors.warning,
+    borderLeftColor: '#FF6B6B',
   },
   disclaimerText: {
     fontSize: Typography.fontSize.sm,
-    color: '#856404',
-    lineHeight: 18,
+    color: '#C92A2A',
+    lineHeight: 20,
+    fontWeight: Typography.fontWeight.semibold,
   },
   pendingImageContainer: {
     padding: Spacing.md,

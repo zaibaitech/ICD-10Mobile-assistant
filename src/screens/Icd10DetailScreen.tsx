@@ -14,6 +14,7 @@ import { SearchStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useVisit } from '../context/VisitContext';
 import { addFavorite, removeFavorite, isFavorite } from '../services/favorites';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 type Icd10DetailScreenRouteProp = RouteProp<SearchStackParamList, 'Icd10Detail'>;
 
@@ -27,7 +28,8 @@ export const Icd10DetailScreen: React.FC<Props> = ({ route }) => {
   const { addCodeToVisit, isCodeInVisit } = useVisit();
   const [favorited, setFavorited] = useState(false);
   const [loadingFavorite, setLoadingFavorite] = useState(true);
-  const inVisit = isCodeInVisit(code.id);
+  const inVisit = isCodeInVisit(code.code);
+  const bottomPadding = useBottomSpacing(40);
 
   useEffect(() => {
     checkFavoriteStatus();
@@ -35,7 +37,7 @@ export const Icd10DetailScreen: React.FC<Props> = ({ route }) => {
 
   const checkFavoriteStatus = async () => {
     if (user) {
-      const status = await isFavorite(user.id, code.id);
+      const status = await isFavorite(user.id, code.code);
       setFavorited(status);
     }
     setLoadingFavorite(false);
@@ -47,10 +49,10 @@ export const Icd10DetailScreen: React.FC<Props> = ({ route }) => {
     setLoadingFavorite(true);
     try {
       if (favorited) {
-        await removeFavorite(user.id, code.id);
+        await removeFavorite(user.id, code.code);
         setFavorited(false);
       } else {
-        await addFavorite(user.id, code.id);
+        await addFavorite(user.id, code);
         setFavorited(true);
       }
     } catch (error) {
@@ -65,7 +67,10 @@ export const Icd10DetailScreen: React.FC<Props> = ({ route }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
+    >
       <View style={styles.header}>
         <View style={styles.codeHeader}>
           <Text style={styles.code}>{code.code}</Text>

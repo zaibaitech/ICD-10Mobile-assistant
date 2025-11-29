@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Icd10ListItem } from '../components/Icd10ListItem';
 import { getUserFavorites } from '../services/favorites';
@@ -9,6 +9,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainTabParamList } from '../types';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 type FavoritesScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<FavoritesStackParamList, 'FavoritesList'>,
@@ -23,6 +24,8 @@ export const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState<Icd10Code[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const bottomPadding = useBottomSpacing();
 
   useFocusEffect(
     useCallback(() => {
@@ -33,9 +36,16 @@ export const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
   const loadFavorites = async () => {
     if (!user) return;
     setLoading(true);
-    const data = await getUserFavorites(user.id);
-    setFavorites(data);
-    setLoading(false);
+    setErrorMessage(null);
+    try {
+      const data = await getUserFavorites(user.id);
+      setFavorites(data);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+      setErrorMessage('Unable to load favorites right now. Pull to refresh.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCodePress = (code: Icd10Code) => {
@@ -53,6 +63,13 @@ export const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color="#3498db" />
         </View>
+      ) : errorMessage ? (
+        <View style={styles.centerContent}>
+          <Text style={styles.emptyText}>{errorMessage}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadFavorites}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
       ) : favorites.length === 0 ? (
         <View style={styles.centerContent}>
           <Text style={styles.emptyText}>No favorites yet</Text>
@@ -68,6 +85,9 @@ export const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
             <Icd10ListItem code={item} onPress={() => handleCodePress(item)} />
           )}
           style={styles.list}
+          contentContainerStyle={{ paddingBottom: bottomPadding }}
+          refreshing={loading}
+          onRefresh={loadFavorites}
         />
       )}
     </View>
@@ -114,5 +134,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#95a5a6',
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#3498db',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });

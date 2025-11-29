@@ -37,7 +37,23 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     setLoading(false);
 
     if (error) {
-      Alert.alert('Login Failed', error.message);
+      const errorMsg = error.message || 'Unknown error occurred';
+      console.log('Login error details:', error);
+      
+      // Show user-friendly error messages
+      if (errorMsg.includes('Invalid login credentials')) {
+        Alert.alert(
+          'Login Failed',
+          'Invalid email or password. Please check your credentials and try again.\n\nIf you don\'t have an account, tap "Sign Up" below.'
+        );
+      } else if (errorMsg.includes('Email not confirmed')) {
+        Alert.alert(
+          'Email Not Confirmed',
+          'Please check your email and click the confirmation link before signing in.'
+        );
+      } else {
+        Alert.alert('Login Failed', errorMsg);
+      }
     }
   };
 

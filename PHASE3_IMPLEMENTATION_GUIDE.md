@@ -34,7 +34,7 @@
 - ✅ `updateEncounterWithAi()` - Update encounter with summary
 - ✅ Privacy-conscious logging (omits identifiable data)
 
-### 5. Usage Examples (`src/services/clinicalAnalysisExample.ts`)
+### 5. Usage Examples (`src/services/clinicalAnalysisExample.tsx`)
 - ✅ Complete implementation examples
 - ✅ React component patterns
 - ✅ Form data structuring
@@ -414,7 +414,7 @@ Before releasing Phase 3 to users:
 ## 📞 Support
 
 For questions about this implementation:
-1. Review usage examples in `src/services/clinicalAnalysisExample.ts`
+1. Review usage examples in `src/services/clinicalAnalysisExample.tsx`
 2. Check type definitions in `src/types/index.ts`
 3. Consult Supabase docs for database operations
 4. Review React Navigation docs for navigation patterns

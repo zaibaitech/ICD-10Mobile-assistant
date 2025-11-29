@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { RuleSuggestion, SuggestedCode } from '../types';
+import { Colors, Typography, Spacing, BorderRadius } from '../constants/theme';
+import { SurfaceCard } from './SurfaceCard';
 
 interface Props {
   suggestion: RuleSuggestion;
@@ -12,16 +14,23 @@ interface Props {
 export const RuleSuggestionCard: React.FC<Props> = ({ suggestion, onAddCode }) => {
   const { t } = useTranslation();
 
+  const priorityColor =
+    suggestion.priority === 'warning' ? Colors.warning : Colors.primary;
+  const priorityBackground =
+    suggestion.priority === 'warning'
+      ? 'rgba(243, 156, 18, 0.08)'
+      : 'rgba(52, 152, 219, 0.08)';
+
   return (
-    <View style={[
-      styles.container,
-      suggestion.priority === 'warning' ? styles.warningContainer : styles.infoContainer
-    ]}>
+    <SurfaceCard
+      elevated={false}
+      style={[styles.card, { borderLeftColor: priorityColor, backgroundColor: priorityBackground }]}
+    >
       <View style={styles.header}>
         <Ionicons
           name={suggestion.priority === 'warning' ? 'warning' : 'information-circle'}
           size={20}
-          color={suggestion.priority === 'warning' ? '#FFC107' : '#007AFF'}
+          color={priorityColor}
         />
         <Text style={styles.headerText}>
           {t(`rules.priority.${suggestion.priority}`)}
@@ -43,83 +52,77 @@ export const RuleSuggestionCard: React.FC<Props> = ({ suggestion, onAddCode }) =
                 <TouchableOpacity
                   style={styles.addButton}
                   onPress={() => onAddCode(code)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Add code ${code.code}`}
                 >
-                  <Ionicons name="add-circle" size={24} color="#007AFF" />
+                  <Ionicons name="add-circle" size={24} color={Colors.primary} />
                 </TouchableOpacity>
               )}
             </View>
           ))}
         </View>
       )}
-    </View>
+    </SurfaceCard>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 6,
-    marginHorizontal: 12,
+  card: {
+    marginVertical: Spacing.xs,
+    marginHorizontal: Spacing.lg,
+    padding: Spacing.lg,
     borderLeftWidth: 4,
-  },
-  warningContainer: {
-    borderLeftColor: '#FFC107',
-    backgroundColor: '#FFFBF0',
-  },
-  infoContainer: {
-    borderLeftColor: '#007AFF',
-    backgroundColor: '#F0F8FF',
+    borderRadius: BorderRadius.lg,
+    borderColor: Colors.border,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   headerText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 6,
-    color: '#333',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    marginLeft: Spacing.xs,
+    color: Colors.textPrimary,
   },
   message: {
-    fontSize: 14,
-    color: '#555',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
     lineHeight: 20,
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
   },
   codesContainer: {
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    borderTopColor: Colors.border,
   },
   codesTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginBottom: 6,
-    color: '#333',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    marginBottom: Spacing.xs,
+    color: Colors.textPrimary,
   },
   codeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 6,
+    paddingVertical: Spacing.xs,
   },
   codeInfo: {
     flex: 1,
   },
   codeCode: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#007AFF',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.primary,
   },
   codeTitle: {
-    fontSize: 13,
-    color: '#555',
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
   },
   addButton: {
-    padding: 4,
+    padding: Spacing.xs,
   },
 });

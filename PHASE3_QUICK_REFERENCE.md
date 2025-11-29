@@ -4,7 +4,7 @@
 
 ### New Files
 1. `database/phase3_clinical.sql` - 5 database tables for clinical features
-2. `src/services/clinicalAnalysisExample.ts` - Usage examples and React components
+2. `src/services/clinicalAnalysisExample.tsx` - Usage examples and React components
 3. `PHASE3_IMPLEMENTATION_GUIDE.md` - Comprehensive implementation guide
 
 ### Modified Files
@@ -293,7 +293,7 @@ The clinician is fully responsible for all clinical decisions.
 ## 📚 Additional Resources
 
 - **Full Implementation Guide**: `PHASE3_IMPLEMENTATION_GUIDE.md`
-- **Usage Examples**: `src/services/clinicalAnalysisExample.ts`
+- **Usage Examples**: `src/services/clinicalAnalysisExample.tsx`
 - **Database Setup**: `database/SETUP.md`
 - **Type Definitions**: `src/types/index.ts`
 

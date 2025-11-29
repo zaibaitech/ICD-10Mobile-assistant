@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { RootStackParamList, MainTabParamList, SearchStackParamList, FavoritesStackParamList, PatientsStackParamList } from '../types';
 
@@ -18,12 +20,17 @@ import { FavoritesScreen } from '../screens/FavoritesScreen';
 import { AssistantScreen } from '../screens/AssistantScreen';
 import { VisitNoteScreen } from '../screens/VisitNoteScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { DiseaseModulesScreen } from '../screens/DiseaseModulesScreen';
 
 // Patient Screens (Phase 3)
 import { PatientsListScreen } from '../screens/PatientsListScreen';
 import { PatientDetailScreen } from '../screens/PatientDetailScreen';
 import { EncounterFormScreen } from '../screens/EncounterFormScreen';
 import { EncounterDetailScreen } from '../screens/EncounterDetailScreen';
+
+// Document Scanner (Phase 4)
+import { DocumentScannerScreen } from '../screens/DocumentScannerScreen';
+import { ClinicalToolsScreen } from '../screens/ClinicalToolsScreen';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -96,21 +103,42 @@ const PatientsNavigator = () => {
 };
 
 // Main Tab Navigator (authenticated users)
+type TabIconName =
+  | 'grid'
+  | 'grid-outline'
+  | 'search'
+  | 'search-outline'
+  | 'chatbubbles'
+  | 'chatbubbles-outline'
+  | 'people'
+  | 'people-outline'
+  | 'medical'
+  | 'medical-outline'
+  | 'document-text'
+  | 'document-text-outline'
+  | 'help-outline';
+
 const MainTabNavigator = () => {
+  const insets = useSafeAreaInsets();
+  const baseHeight = 65;
+  const safePadding = Math.max(insets.bottom, 12);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: keyof typeof Ionicons.glyphMap;
+          let iconName: TabIconName;
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'Patients') {
-            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Assistant') {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
+          } else if (route.name === 'Patients') {
+            iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Modules') {
+            iconName = focused ? 'medical' : 'medical-outline';
           } else if (route.name === 'Visit') {
             iconName = focused ? 'document-text' : 'document-text-outline';
           } else {
@@ -122,12 +150,25 @@ const MainTabNavigator = () => {
         tabBarActiveTintColor: '#3498db',
         tabBarInactiveTintColor: '#95a5a6',
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 8,
+          height: baseHeight + safePadding,
+          paddingBottom: safePadding,
           paddingTop: 8,
           borderTopWidth: 1,
           borderTopColor: '#e0e0e0',
           backgroundColor: '#FFFFFF',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 10,
+          marginTop: 0,
+          marginBottom: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 2,
         },
         headerShown: false,
       })}
@@ -140,7 +181,7 @@ const MainTabNavigator = () => {
       <Tab.Screen 
         name="Search" 
         component={SearchNavigator}
-        options={{ tabBarLabel: 'Search' }}
+        options={{ tabBarLabel: 'ICD-10' }}
       />
       <Tab.Screen 
         name="Assistant" 
@@ -151,6 +192,11 @@ const MainTabNavigator = () => {
         name="Patients" 
         component={PatientsNavigator}
         options={{ tabBarLabel: 'Patients' }}
+      />
+      <Tab.Screen 
+        name="Modules" 
+        component={DiseaseModulesScreen}
+        options={{ tabBarLabel: 'Guides' }}
       />
       <Tab.Screen 
         name="Visit" 
@@ -166,14 +212,48 @@ export const AppNavigator = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return null; // TODO: Add a proper loading screen
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#3498db" />
+        <Text style={styles.loadingText}>Preparing your workspace…</Text>
+      </View>
+    );
   }
 
   return (
     <NavigationContainer>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <RootStack.Screen name="Main" component={MainTabNavigator} />
+          <>
+            <RootStack.Screen name="Main" component={MainTabNavigator} />
+            <RootStack.Screen 
+              name="Profile" 
+              component={ProfileScreen}
+              options={{ 
+                headerShown: true,
+                title: 'Profile',
+                presentation: 'card'
+              }}
+            />
+            <RootStack.Screen 
+              name="DocumentScanner" 
+              component={DocumentScannerScreen}
+              options={{ 
+                headerShown: true,
+                title: 'Document Scanner',
+                presentation: 'card'
+              }}
+            />
+            <RootStack.Screen 
+              name="ClinicalTools" 
+              component={ClinicalToolsScreen}
+              options={{ 
+                headerShown: true,
+                title: 'Clinical Tools',
+                presentation: 'card'
+              }}
+            />
+          </>
         ) : (
           <>
             <RootStack.Screen name="Login" component={LoginScreen} />
@@ -184,3 +264,17 @@ export const AppNavigator = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#7f8c8d',
+    fontSize: 14,
+  },
+});

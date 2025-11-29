@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   Switch,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -19,6 +20,12 @@ import {
   DurationValue,
   RedFlagType,
 } from '../types';
+import { useBottomSpacing } from '../hooks/useBottomSpacing';
+import DateTimePicker, {
+  DateTimePickerEvent,
+  DateTimePickerAndroid,
+} from '@react-native-community/datetimepicker';
+import Slider from '@react-native-community/slider';
 
 type NavigationProp = NativeStackNavigationProp<PatientsStackParamList, 'EncounterForm'>;
 type RouteParams = RouteProp<PatientsStackParamList, 'EncounterForm'>;
@@ -50,16 +57,25 @@ export const EncounterFormScreen: React.FC = () => {
   const [fever, setFever] = useState(false);
   const [cough, setCough] = useState(false);
   const [shortnessOfBreath, setShortnessOfBreath] = useState(false);
+  const [chestPain, setChestPain] = useState(false);
+  const [severeAbdominalPain, setSevereAbdominalPain] = useState(false);
+  const [confusion, setConfusion] = useState(false);
   const [painPresent, setPainPresent] = useState(false);
   const [painLocation, setPainLocation] = useState('');
-  const [painSeverity, setPainSeverity] = useState('5');
+  const [painSeverity, setPainSeverity] = useState(5);
+  const [painRadiating, setPainRadiating] = useState(false);
   const [redFlags, setRedFlags] = useState<RedFlagType[]>([]);
   const [notes, setNotes] = useState('');
   const [temperature, setTemperature] = useState('');
   const [heartRate, setHeartRate] = useState('');
   const [bpSystolic, setBpSystolic] = useState('');
   const [bpDiastolic, setBpDiastolic] = useState('');
+  const [respiratoryRate, setRespiratoryRate] = useState('');
+  const [oxygenSaturation, setOxygenSaturation] = useState('');
+  const [encounterDate, setEncounterDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
+  const bottomPadding = useBottomSpacing();
 
   const toggleRedFlag = (flag: RedFlagType) => {
     if (redFlags.includes(flag)) {
@@ -69,38 +85,149 @@ export const EncounterFormScreen: React.FC = () => {
     }
   };
 
+  const parseFloatSafe = (value: string): number | undefined => {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const parseIntSafe = (value: string): number | undefined => {
+    const parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const validateForm = (): string | null => {
+    if (painPresent && !painLocation.trim()) {
+      return 'Please describe where the patient feels pain.';
+    }
+
+    const temp = parseFloatSafe(temperature);
+    if (temp !== undefined && (temp < 30 || temp > 43)) {
+      return 'Temperature must be between 30°C and 43°C.';
+    }
+
+    const hr = parseIntSafe(heartRate);
+    if (hr !== undefined && (hr < 30 || hr > 220)) {
+      return 'Heart rate must be between 30 and 220 bpm.';
+    }
+
+    const systolic = parseIntSafe(bpSystolic);
+    if (systolic !== undefined && (systolic < 60 || systolic > 250)) {
+      return 'Systolic blood pressure must be between 60 and 250 mmHg.';
+    }
+
+    const diastolic = parseIntSafe(bpDiastolic);
+    if (diastolic !== undefined && (diastolic < 30 || diastolic > 150)) {
+      return 'Diastolic blood pressure must be between 30 and 150 mmHg.';
+    }
+
+    if (
+      systolic !== undefined &&
+      diastolic !== undefined &&
+      systolic <= diastolic
+    ) {
+      return 'Systolic pressure must be greater than diastolic pressure.';
+    }
+
+    const rr = parseIntSafe(respiratoryRate);
+    if (rr !== undefined && (rr < 5 || rr > 60)) {
+      return 'Respiratory rate must be between 5 and 60 breaths per minute.';
+    }
+
+    const spo2 = parseIntSafe(oxygenSaturation);
+    if (spo2 !== undefined && (spo2 < 50 || spo2 > 100)) {
+      return 'Oxygen saturation must be between 50% and 100%.';
+    }
+
+    return null;
+  };
+
+  const formatEncounterDate = (date: Date) =>
+    date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+
+  const handleDateChange = (
+    event: DateTimePickerEvent,
+    selectedDate?: Date | undefined
+  ) => {
+    if (event.type === 'dismissed') {
+      return;
+    }
+
+    if (selectedDate) {
+      setEncounterDate(selectedDate);
+    }
+  };
+
+  const openDatePicker = () => {
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: encounterDate,
+        mode: 'date',
+        onChange: handleDateChange,
+      });
+      return;
+    }
+
+    setShowDatePicker(true);
+  };
+
   const handleSave = async () => {
     if (!chiefComplaint.trim()) {
       Alert.alert('Error', 'Please enter a chief complaint');
       return;
     }
 
+    const validationError = validateForm();
+    if (validationError) {
+      Alert.alert('Invalid input', validationError);
+      return;
+    }
+
+    const temperatureValue = parseFloatSafe(temperature);
+    const heartRateValue = parseIntSafe(heartRate);
+    const bpSystolicValue = parseIntSafe(bpSystolic);
+    const bpDiastolicValue = parseIntSafe(bpDiastolic);
+    const respiratoryRateValue = parseIntSafe(respiratoryRate);
+    const oxygenSaturationValue = parseIntSafe(oxygenSaturation);
+
     const structuredData: StructuredEncounterData = {
       duration,
       fever,
       cough,
       shortness_of_breath: shortnessOfBreath,
+      chest_pain: chestPain,
+      severe_abdominal_pain: severeAbdominalPain,
+      confusion,
       pain: painPresent
         ? {
             present: true,
             location: painLocation,
-            severity: parseInt(painSeverity) || 5,
+            severity: Math.max(1, Math.min(10, painSeverity)),
+            radiating: painRadiating,
           }
         : { present: false },
       red_flags: redFlags.length > 0 ? redFlags : undefined,
       vitals: {
-        temperature: temperature ? parseFloat(temperature) : undefined,
-        heart_rate: heartRate ? parseInt(heartRate) : undefined,
-        blood_pressure_systolic: bpSystolic ? parseInt(bpSystolic) : undefined,
-        blood_pressure_diastolic: bpDiastolic ? parseInt(bpDiastolic) : undefined,
+        temperature: temperatureValue,
+        heart_rate: heartRateValue,
+        bp_systolic: bpSystolicValue,
+        bp_diastolic: bpDiastolicValue,
+        respiratory_rate: respiratoryRateValue,
+        oxygen_saturation: oxygenSaturationValue,
       },
       notes: notes || undefined,
     };
+
+    const encounterDateIso = encounterDate.toISOString().split('T')[0];
 
     try {
       setSaving(true);
       const encounter = await createEncounter({
         patient_id: patientId,
+        encounter_date: encounterDateIso,
         chief_complaint: chiefComplaint,
         structured_data: structuredData,
       });
@@ -115,7 +242,10 @@ export const EncounterFormScreen: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: bottomPadding }}
+    >
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Chief Complaint *</Text>
         <TextInput
@@ -126,6 +256,31 @@ export const EncounterFormScreen: React.FC = () => {
           placeholderTextColor="#999"
           multiline
         />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Encounter Date</Text>
+        <TouchableOpacity style={styles.dateButton} onPress={openDatePicker}>
+          <Ionicons name="calendar" size={20} color="#007AFF" />
+          <Text style={styles.dateButtonText}>{formatEncounterDate(encounterDate)}</Text>
+        </TouchableOpacity>
+        {Platform.OS === 'ios' && showDatePicker && (
+          <View style={styles.iosPickerWrapper}>
+            <DateTimePicker
+              value={encounterDate}
+              mode="date"
+              display="spinner"
+              onChange={handleDateChange}
+              style={styles.iosDatePicker}
+            />
+            <TouchableOpacity
+              style={styles.iosDoneButton}
+              onPress={() => setShowDatePicker(false)}
+            >
+              <Text style={styles.iosDoneButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -168,6 +323,18 @@ export const EncounterFormScreen: React.FC = () => {
           <Switch value={shortnessOfBreath} onValueChange={setShortnessOfBreath} />
         </View>
         <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>Chest Pain</Text>
+          <Switch value={chestPain} onValueChange={setChestPain} />
+        </View>
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>Severe Abdominal Pain</Text>
+          <Switch value={severeAbdominalPain} onValueChange={setSevereAbdominalPain} />
+        </View>
+        <View style={styles.toggleRow}>
+          <Text style={styles.toggleLabel}>Confusion / AMS</Text>
+          <Switch value={confusion} onValueChange={setConfusion} />
+        </View>
+        <View style={styles.toggleRow}>
           <Text style={styles.toggleLabel}>Pain</Text>
           <Switch value={painPresent} onValueChange={setPainPresent} />
         </View>
@@ -181,6 +348,22 @@ export const EncounterFormScreen: React.FC = () => {
               placeholderTextColor="#999"
             />
             <Text style={styles.label}>Severity: {painSeverity}/10</Text>
+            <Slider
+              value={painSeverity}
+              onValueChange={(value) => setPainSeverity(Math.round(value))}
+              step={1}
+              minimumValue={1}
+              maximumValue={10}
+              minimumTrackTintColor="#FF7043"
+              maximumTrackTintColor="#DDD"
+              thumbTintColor="#FF7043"
+              accessibilityLabel="Pain severity slider"
+              style={styles.painSlider}
+            />
+            <View style={styles.toggleRow}>
+              <Text style={styles.toggleLabel}>Radiating?</Text>
+              <Switch value={painRadiating} onValueChange={setPainRadiating} />
+            </View>
           </View>
         )}
       </View>
@@ -246,6 +429,28 @@ export const EncounterFormScreen: React.FC = () => {
               value={bpDiastolic}
               onChangeText={setBpDiastolic}
               placeholder="80"
+              keyboardType="number-pad"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={styles.vitalInput}>
+            <Text style={styles.label}>Respiratory Rate</Text>
+            <TextInput
+              style={styles.input}
+              value={respiratoryRate}
+              onChangeText={setRespiratoryRate}
+              placeholder="18"
+              keyboardType="number-pad"
+              placeholderTextColor="#999"
+            />
+          </View>
+          <View style={styles.vitalInput}>
+            <Text style={styles.label}>O₂ Saturation (%)</Text>
+            <TextInput
+              style={styles.input}
+              value={oxygenSaturation}
+              onChangeText={setOxygenSaturation}
+              placeholder="98"
               keyboardType="number-pad"
               placeholderTextColor="#999"
             />
@@ -317,6 +522,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    backgroundColor: '#F9F9F9',
+  },
+  dateButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#333',
+  },
+  iosPickerWrapper: {
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    backgroundColor: '#FDFDFD',
+    overflow: 'hidden',
+  },
+  iosDatePicker: {
+    width: '100%',
+  },
+  iosDoneButton: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
+  },
+  iosDoneButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#007AFF',
+  },
   optionButton: {
     flex: 1,
     paddingVertical: 10,
@@ -353,6 +597,9 @@ const styles = StyleSheet.create({
   painDetails: {
     marginTop: 12,
     gap: 8,
+  },
+  painSlider: {
+    marginHorizontal: 4,
   },
   checkboxRow: {
     flexDirection: 'row',

@@ -148,6 +148,17 @@ export interface Encounter {
   updated_at: string;
 }
 
+export type DurationValue = 'hours' | 'days' | 'weeks' | 'months';
+
+export type RedFlagType =
+  | 'chest_pain'
+  | 'sudden_weakness'
+  | 'severe_abdominal_pain'
+  | 'altered_mental_status'
+  | 'difficulty_breathing'
+  | 'severe_headache'
+  | 'signs_of_stroke';
+
 export interface StructuredEncounterData {
   // Symptoms
   fever?: boolean;
@@ -158,7 +169,7 @@ export interface StructuredEncounterData {
   confusion?: boolean;
   
   // Duration
-  duration?: 'hours' | 'days' | 'weeks' | 'months';
+  duration?: DurationValue;
   
   // Pain details
   pain?: {
@@ -179,7 +190,7 @@ export interface StructuredEncounterData {
   };
   
   // Red flags (checklist)
-  red_flags?: string[];
+  red_flags?: RedFlagType[];
   
   // Free text
   notes?: string;
@@ -241,14 +252,18 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Main: undefined;
+  Profile: undefined;
+  DocumentScanner: undefined;
+  ClinicalTools: undefined;
 };
 
 export type MainTabParamList = {
-  Dashboard: undefined; // NEW: Home screen
-  Patients: undefined; // Phase 3
-  Search: undefined;
-  Assistant: undefined; // Phase 2
-  Visit: undefined;
+  Dashboard: undefined; // Home screen
+  Search: undefined; // ICD-10 search
+  Assistant: undefined; // AI Assistant
+  Patients: undefined; // Patient management
+  Modules: undefined; // Disease modules
+  Visit: undefined; // Visit notes
   Profile: undefined;
 };
 

@@ -1,0 +1,15 @@
+{
+  "github.copilot.chat.mcp.enabled": true,
+  "github.copilot.chat.mcp.servers": {
+    "icd10-supabase": {
+      "command": "node",
+      "args": [
+        "/workspaces/ICD-10Mobile-assistant/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "SUPABASE_URL": "${SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${SUPABASE_SERVICE_ROLE_KEY}"
+      }
+    }
+  }
+}

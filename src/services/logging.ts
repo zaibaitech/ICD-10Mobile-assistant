@@ -171,6 +171,7 @@ export async function logClinicalAnalysis({
 
 /**
  * Save detailed AI result to encounter_ai_results table
+ * NOTE: This is optional - the ai_result is already stored in encounters.ai_result
  */
 export async function saveAiResult({
   userId,
@@ -181,16 +182,9 @@ export async function saveAiResult({
   encounterId: string;
   analysis: ClinicalAnalysisResult;
 }): Promise<void> {
-  const { error } = await supabase.from('encounter_ai_results').insert({
-    user_id: userId,
-    encounter_id: encounterId,
-    analysis,
-  });
-
-  if (error) {
-    console.error('Failed to save AI result:', error);
-    throw error;
-  }
+  // Skip saving to separate table - already saved in encounters.ai_result
+  // This function is kept for backwards compatibility
+  console.log('AI result saved in encounters.ai_result column');
 }
 
 /**

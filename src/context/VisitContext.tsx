@@ -22,8 +22,8 @@ export const VisitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addCodeToVisit = (code: Icd10Code) => {
     setVisitCodes((prevCodes) => {
-      // Check if code already exists
-      if (prevCodes.some((c) => c.id === code.id)) {
+      // Check if code already exists (using code.code instead of code.id)
+      if (prevCodes.some((c) => c.code === code.code)) {
         return prevCodes;
       }
       return [...prevCodes, code];
@@ -31,7 +31,7 @@ export const VisitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const removeCodeFromVisit = (codeId: string) => {
-    setVisitCodes((prevCodes) => prevCodes.filter((c) => c.id !== codeId));
+    setVisitCodes((prevCodes) => prevCodes.filter((c) => c.code !== codeId));
   };
 
   const clearVisit = () => {
@@ -40,7 +40,7 @@ export const VisitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const isCodeInVisit = (codeId: string): boolean => {
-    return visitCodes.some((c) => c.id === codeId);
+    return visitCodes.some((c) => c.code === codeId);
   };
 
   const addAttachment = (attachment: VisitAttachment) => {

@@ -8,8 +8,10 @@ The clinician remains fully responsible for all clinical decisions.
 `.trim();
 
 export const ASSISTANT_DISCLAIMER = `
-This assistant helps with documentation and ICD-10 coding.
-It does NOT provide medical diagnoses or clinical decisions.
+⚠️ KEYWORD-MATCHING ONLY – This assistant uses basic keyword matching, NOT real AI.
+It helps with documentation and ICD-10 coding suggestions.
+It does NOT provide medical diagnoses, image analysis, or clinical decisions.
+All suggestions must be verified by a qualified clinician.
 `.trim();
 
 export const RESEARCH_MODE_BANNER = `

@@ -12,6 +12,7 @@ interface Props {
   isRecording?: boolean;
   isLoading?: boolean;
   placeholder?: string;
+  bottomInset?: number;
 }
 
 export const ChatInput: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const ChatInput: React.FC<Props> = ({
   isRecording = false,
   isLoading = false,
   placeholder,
+  bottomInset = 0,
 }) => {
   const { t } = useTranslation();
   const [text, setText] = useState('');
@@ -118,8 +120,12 @@ export const ChatInput: React.FC<Props> = ({
     );
   };
 
+  const containerStyle = bottomInset
+    ? [styles.container, { paddingBottom: 8 + bottomInset }]
+    : styles.container;
+
   return (
-    <View style={styles.container}>
+    <View style={containerStyle}>
       {onImageSelected && (
         <TouchableOpacity
           style={styles.iconButton}
