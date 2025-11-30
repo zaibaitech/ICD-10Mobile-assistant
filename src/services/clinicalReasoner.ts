@@ -1,8 +1,7 @@
 // ============================================
 // CLINICAL REASONER SERVICE
 // ============================================
-// Rule-based mock analysis for research/prototype mode
-// TODO: Replace with real clinical AI API (Infermedica, custom model, etc.)
+// AI-powered clinical analysis using Groq AI
 
 import type {
   Patient,
@@ -11,6 +10,7 @@ import type {
   PossibleCondition,
   RiskLevel,
 } from '../types';
+import { AI_CONFIG } from '../config/ai';
 
 // === Constants ===
 const CAUTION_TEXT = `
@@ -36,6 +36,123 @@ function containsAny(text: string, keywords: string[]): boolean {
 
 // === Main Analysis Function ===
 export async function analyzeEncounter(
+  encounter: Encounter,
+  patient: Patient
+): Promise<ClinicalAnalysisResult> {
+  // Use real AI if configured
+  if (AI_CONFIG.USE_REAL_AI && AI_CONFIG.GROQ.API_KEY) {
+    try {
+      return await analyzeWithGroqAI(encounter, patient);
+    } catch (error) {
+      console.error('Groq AI analysis failed, falling back to rule-based:', error);
+      // Fall through to rule-based analysis
+    }
+  }
+
+  // Fallback: Rule-based analysis
+  return await analyzeWithRules(encounter, patient);
+}
+
+/**
+ * AI-powered clinical analysis using Groq
+ */
+async function analyzeWithGroqAI(
+  encounter: Encounter,
+  patient: Patient
+): Promise<ClinicalAnalysisResult> {
+  const age = calculateAge(patient.year_of_birth);
+  
+  // Build context for AI
+  const patientContext = `
+Patient Information:
+- Age: ${age || 'Unknown'}
+- Chief Complaint: ${encounter.chief_complaint}
+- Date of Encounter: ${encounter.date_of_encounter}
+${encounter.notes ? `\nClinical Notes:\n${encounter.notes}` : ''}
+${encounter.structured_data ? `\nStructured Data:\n${JSON.stringify(encounter.structured_data, null, 2)}` : ''}
+`.trim();
+
+  const systemPrompt = `You are an expert medical AI assistant specializing in clinical reasoning and ICD-10 coding.
+Analyze the patient encounter and provide:
+1. Possible conditions with ICD-10 codes
+2. Risk level assessment (low/moderate/high)
+3. Red flags requiring urgent attention
+4. Recommended follow-up questions
+
+${CAUTION_TEXT}
+
+Return your analysis in this exact JSON format:
+{
+  "possible_conditions": [
+    {
+      "name": "Condition name",
+      "icd10_code": "CODE",
+      "likelihood": "high|medium|low",
+      "explanation": "Brief explanation"
+    }
+  ],
+  "risk_level": "low|moderate|high",
+  "red_flags": ["Red flag 1", "Red flag 2"],
+  "recommended_questions": ["Question 1", "Question 2"],
+  "caution_text": "${CAUTION_TEXT}"
+}`;
+
+  const response = await fetch(`${AI_CONFIG.GROQ.API_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${AI_CONFIG.GROQ.API_KEY}`
+    },
+    body: JSON.stringify({
+      model: AI_CONFIG.GROQ.CHAT_MODEL,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: patientContext }
+      ],
+      temperature: 0.3, // Lower temperature for more consistent medical analysis
+      max_tokens: 1500,
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Groq API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const aiResponse = data.choices[0]?.message?.content;
+
+  if (!aiResponse) {
+    throw new Error('No response from Groq AI');
+  }
+
+  // Parse JSON response
+  try {
+    // Extract JSON from response (in case there's extra text)
+    const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+    
+    const result = JSON.parse(jsonMatch[0]);
+    
+    // Validate and ensure all required fields exist
+    return {
+      possible_conditions: result.possible_conditions || [],
+      risk_level: result.risk_level || 'unknown',
+      red_flags: result.red_flags || [],
+      recommended_questions: result.recommended_questions || [],
+      caution_text: CAUTION_TEXT,
+    };
+  } catch (parseError) {
+    console.error('Failed to parse AI response:', parseError);
+    throw new Error('Invalid AI response format');
+  }
+}
+
+/**
+ * Rule-based analysis (fallback)
+ */
+async function analyzeWithRules(
   encounter: Encounter,
   patient: Patient
 ): Promise<ClinicalAnalysisResult> {

@@ -3,7 +3,7 @@
  * Capture photos of medical documents for OCR processing
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ interface CameraCaptureProps {
 export function CameraCapture({ visible, onCapture, onClose }: CameraCaptureProps) {
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<'front' | 'back'>('back');
+  const cameraRef = useRef<CameraView>(null);
 
   React.useEffect(() => {
     if (visible && !permission?.granted) {
@@ -35,15 +36,52 @@ export function CameraCapture({ visible, onCapture, onClose }: CameraCaptureProp
   }, [visible]);
 
   const takePicture = async () => {
-    // Note: Taking picture requires ref access which is complex with new CameraView
-    // For now, we'll rely on image picker
-    pickImage();
+    try {
+      // Request camera permissions first
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'Please allow camera access to take photos.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      // Use ImagePicker for camera capture (more reliable)
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        onCapture(result.assets[0].uri);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error taking picture:', error);
+      Alert.alert('Error', 'Failed to take picture. Please try again.');
+    }
   };
 
   const pickImage = async () => {
     try {
+      // Request media library permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'Please allow access to your photo library to select images.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         quality: 0.8,
       });
@@ -101,56 +139,60 @@ export function CameraCapture({ visible, onCapture, onClose }: CameraCaptureProp
   return (
     <Modal visible={visible} animationType="slide">
       <View style={styles.container}>
-        <CameraView style={styles.camera} facing={facing}>
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity style={styles.headerButton} onPress={onClose}>
-              <Ionicons name="close" size={28} color="#fff" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Capture Document</Text>
-            <TouchableOpacity style={styles.headerButton} onPress={toggleCameraFacing}>
-              <Ionicons name="camera-reverse" size={28} color="#fff" />
-            </TouchableOpacity>
-          </View>
+        <CameraView 
+          ref={cameraRef}
+          style={styles.camera} 
+          facing={facing}
+        />
+        
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.headerButton} onPress={onClose}>
+            <Ionicons name="close" size={28} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Capture Document</Text>
+          <TouchableOpacity style={styles.headerButton} onPress={toggleCameraFacing}>
+            <Ionicons name="camera-reverse" size={28} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-          {/* Frame Guide */}
-          <View style={styles.frameGuide}>
-            <View style={styles.frameCornerTL} />
-            <View style={styles.frameCornerTR} />
-            <View style={styles.frameCornerBL} />
-            <View style={styles.frameCornerBR} />
-          </View>
+        {/* Frame Guide */}
+        <View style={styles.frameGuide}>
+          <View style={styles.frameCornerTL} />
+          <View style={styles.frameCornerTR} />
+          <View style={styles.frameCornerBL} />
+          <View style={styles.frameCornerBR} />
+        </View>
 
-          {/* Instructions */}
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.instructionsText}>
-              Position the document within the frame
-            </Text>
-            <Text style={styles.instructionsSubtext}>
-              Ensure good lighting and focus
-            </Text>
-          </View>
+        {/* Instructions */}
+        <View style={styles.instructionsContainer}>
+          <Text style={styles.instructionsText}>
+            Position the document within the frame
+          </Text>
+          <Text style={styles.instructionsSubtext}>
+            Tap the white button to capture
+          </Text>
+        </View>
 
-          {/* Controls */}
-          <View style={styles.controls}>
-            <TouchableOpacity
-              style={styles.galleryButton}
-              onPress={pickImage}
-            >
-              <Ionicons name="images" size={32} color="#fff" />
-              <Text style={styles.buttonLabel}>Gallery</Text>
-            </TouchableOpacity>
+        {/* Controls */}
+        <View style={styles.controls}>
+          <TouchableOpacity
+            style={styles.galleryButton}
+            onPress={pickImage}
+          >
+            <Ionicons name="images" size={32} color="#fff" />
+            <Text style={styles.buttonLabel}>Gallery</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.captureButton}
-              onPress={takePicture}
-            >
-              <View style={styles.captureButtonInner} />
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.captureButton}
+            onPress={takePicture}
+          >
+            <View style={styles.captureButtonInner} />
+          </TouchableOpacity>
 
-            <View style={styles.placeholderButton} />
-          </View>
-        </CameraView>
+          <View style={styles.placeholderButton} />
+        </View>
       </View>
     </Modal>
   );

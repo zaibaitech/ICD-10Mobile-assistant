@@ -74,12 +74,12 @@ export function ClinicalToolsScreen() {
     setConditions(conditions.filter((_, i) => i !== index));
   };
 
-  const checkInteractions = () => {
+  const checkInteractions = async () => {
     if (drugs.length < 2) {
       Alert.alert('Info', 'Add at least 2 medications to check for interactions');
       return;
     }
-    const results = getDrugSafetySummary(drugs, conditions);
+    const results = await getDrugSafetySummary(drugs, conditions);
     setDrugResults(results);
   };
 
@@ -113,12 +113,12 @@ export function ClinicalToolsScreen() {
     setLabResults(labResults.filter((_, i) => i !== index));
   };
 
-  const interpretLabs = () => {
+  const interpretLabs = async () => {
     if (labResults.length === 0) {
       Alert.alert('Info', 'Add at least one lab result to interpret');
       return;
     }
-    const results = interpretLabPanel(labResults);
+    const results = await interpretLabPanel(labResults);
     setLabInterpretations(results);
   };
 

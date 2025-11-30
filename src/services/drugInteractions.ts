@@ -1,7 +1,9 @@
 /**
  * Drug Interactions Service
- * Check for potential drug-drug interactions and contraindications
+ * Check for potential drug-drug interactions and contraindications using Supabase database
  */
+
+import { supabase } from './supabase';
 
 export interface Drug {
   name: string;
@@ -15,7 +17,9 @@ export interface DrugInteraction {
   drug2: string;
   severity: 'major' | 'moderate' | 'minor';
   description: string;
+  mechanism?: string;
   recommendation: string;
+  references?: string[];
 }
 
 export interface DrugContraindication {
@@ -23,95 +27,11 @@ export interface DrugContraindication {
   condition: string;
   severity: 'absolute' | 'relative';
   description: string;
+  mechanism?: string;
+  alternatives?: string[];
 }
 
-// Common drug interaction database (simplified version)
-const KNOWN_INTERACTIONS: DrugInteraction[] = [
-  {
-    drug1: 'warfarin',
-    drug2: 'aspirin',
-    severity: 'major',
-    description: 'Increased risk of bleeding when combining anticoagulants with antiplatelet agents.',
-    recommendation: 'Monitor INR closely. Consider alternative antiplatelet if possible.',
-  },
-  {
-    drug1: 'warfarin',
-    drug2: 'nsaid',
-    severity: 'major',
-    description: 'NSAIDs can increase bleeding risk and reduce anticoagulant effectiveness.',
-    recommendation: 'Avoid concurrent use. Use acetaminophen for pain if needed.',
-  },
-  {
-    drug1: 'metformin',
-    drug2: 'contrast dye',
-    severity: 'major',
-    description: 'Risk of lactic acidosis when metformin is used with iodinated contrast.',
-    recommendation: 'Hold metformin 48 hours before and after contrast procedures.',
-  },
-  {
-    drug1: 'ace inhibitor',
-    drug2: 'potassium',
-    severity: 'moderate',
-    description: 'ACE inhibitors can cause hyperkalemia, especially with potassium supplements.',
-    recommendation: 'Monitor potassium levels. Avoid potassium-sparing diuretics.',
-  },
-  {
-    drug1: 'ssri',
-    drug2: 'nsaid',
-    severity: 'moderate',
-    description: 'SSRIs combined with NSAIDs increase risk of GI bleeding.',
-    recommendation: 'Consider PPI for gastroprotection. Monitor for signs of bleeding.',
-  },
-  {
-    drug1: 'statins',
-    drug2: 'macrolides',
-    severity: 'moderate',
-    description: 'Macrolide antibiotics can increase statin levels, raising rhabdomyolysis risk.',
-    recommendation: 'Consider statin dose reduction or temporary discontinuation.',
-  },
-  {
-    drug1: 'beta blocker',
-    drug2: 'calcium channel blocker',
-    severity: 'moderate',
-    description: 'Both drugs slow heart rate and can cause bradycardia or heart block.',
-    recommendation: 'Monitor heart rate and blood pressure. Use with caution.',
-  },
-  {
-    drug1: 'digoxin',
-    drug2: 'amiodarone',
-    severity: 'major',
-    description: 'Amiodarone significantly increases digoxin levels.',
-    recommendation: 'Reduce digoxin dose by 50% when starting amiodarone. Monitor levels.',
-  },
-];
-
-// Common contraindications
-const CONTRAINDICATIONS: DrugContraindication[] = [
-  {
-    drug: 'metformin',
-    condition: 'renal failure',
-    severity: 'absolute',
-    description: 'Metformin is contraindicated in severe renal impairment (eGFR <30).',
-  },
-  {
-    drug: 'nsaid',
-    condition: 'peptic ulcer',
-    severity: 'relative',
-    description: 'NSAIDs can worsen peptic ulcer disease and cause GI bleeding.',
-  },
-  {
-    drug: 'beta blocker',
-    condition: 'asthma',
-    severity: 'relative',
-    description: 'Non-selective beta blockers can trigger bronchospasm in asthma.',
-  },
-  {
-    drug: 'ace inhibitor',
-    condition: 'pregnancy',
-    severity: 'absolute',
-    description: 'ACE inhibitors are teratogenic and contraindicated in pregnancy.',
-  },
-];
+// Database-backed interactions (no mock data needed)
 
 /**
  * Normalize drug name for matching
@@ -148,75 +68,104 @@ function drugsMatch(drug1: string, drug2: string): boolean {
 }
 
 /**
- * Check for drug-drug interactions
+ * Check for drug-drug interactions using Supabase database
  */
-export function checkDrugInteractions(drugs: Drug[]): DrugInteraction[] {
-  const interactions: DrugInteraction[] = [];
-  
-  // Check each pair of drugs
-  for (let i = 0; i < drugs.length; i++) {
-    for (let j = i + 1; j < drugs.length; j++) {
-      const drug1 = drugs[i];
-      const drug2 = drugs[j];
-      
-      // Check against known interactions
-      for (const interaction of KNOWN_INTERACTIONS) {
-        const match1 = drugsMatch(drug1.name, interaction.drug1) && drugsMatch(drug2.name, interaction.drug2);
-        const match2 = drugsMatch(drug1.name, interaction.drug2) && drugsMatch(drug2.name, interaction.drug1);
-        
-        if (match1 || match2) {
-          interactions.push({
-            ...interaction,
-            drug1: drug1.name,
-            drug2: drug2.name,
-          });
-        }
-      }
+export async function checkDrugInteractions(drugs: Drug[]): Promise<DrugInteraction[]> {
+  if (drugs.length < 2) return [];
+
+  try {
+    // Use original drug names (preserve capitalization for database matching)
+    const medicationNames = drugs.map(d => d.name.trim());
+
+    // Call Supabase function to check interactions
+    const { data, error } = await supabase
+      .rpc('check_drug_interactions', { medication_names: medicationNames });
+
+    if (error) {
+      console.error('Error checking drug interactions:', error);
+      return [];
     }
+
+    if (!data || data.length === 0) return [];
+
+    // Map database results to DrugInteraction interface
+    return data.map((row: any) => ({
+      drug1: row.drug1 || '',
+      drug2: row.drug2 || '',
+      severity: row.severity as 'major' | 'moderate' | 'minor',
+      description: row.description || '',
+      mechanism: row.mechanism,
+      recommendation: row.recommendation || '',
+      references: row.references || [],
+    }));
+  } catch (error) {
+    console.error('Error in checkDrugInteractions:', error);
+    return [];
   }
-  
-  return interactions;
 }
 
 /**
- * Check for drug contraindications based on patient conditions
+ * Check for drug contraindications based on patient conditions using Supabase database
  */
-export function checkContraindications(
+export async function checkContraindications(
   drugs: Drug[],
   conditions: string[]
-): DrugContraindication[] {
-  const contraindications: DrugContraindication[] = [];
-  
-  for (const drug of drugs) {
-    for (const condition of conditions) {
-      for (const contraindication of CONTRAINDICATIONS) {
-        if (drugsMatch(drug.name, contraindication.drug) &&
-            normalizeDrugName(condition).includes(normalizeDrugName(contraindication.condition))) {
-          contraindications.push({
-            ...contraindication,
-            drug: drug.name,
-            condition,
-          });
+): Promise<DrugContraindication[]> {
+  if (drugs.length === 0 || conditions.length === 0) return [];
+
+  try {
+    const contraindications: DrugContraindication[] = [];
+
+    // Query database for each drug-condition pair (case-insensitive)
+    for (const drug of drugs) {
+      for (const condition of conditions) {
+        const { data, error } = await supabase
+          .from('drug_contraindications')
+          .select('*')
+          .ilike('drug_name', drug.name.trim())
+          .ilike('condition', `%${condition.trim()}%`);
+
+        if (error) {
+          console.error('Error checking contraindications:', error);
+          continue;
+        }
+
+        if (data && data.length > 0) {
+          contraindications.push(
+            ...data.map((row: any) => ({
+              drug: drug.name,
+              condition,
+              severity: row.severity as 'absolute' | 'relative',
+              description: row.description || '',
+              mechanism: row.mechanism,
+              alternatives: row.alternatives || [],
+            }))
+          );
         }
       }
     }
+
+    return contraindications;
+  } catch (error) {
+    console.error('Error in checkContraindications:', error);
+    return [];
   }
-  
-  return contraindications;
 }
 
 /**
- * Get drug safety summary
+ * Get drug safety summary with database data
  */
-export function getDrugSafetySummary(drugs: Drug[], conditions: string[]) {
-  const interactions = checkDrugInteractions(drugs);
-  const contraindications = checkContraindications(drugs, conditions);
-  
+export async function getDrugSafetySummary(drugs: Drug[], conditions: string[]) {
+  const [interactions, contraindications] = await Promise.all([
+    checkDrugInteractions(drugs),
+    checkContraindications(drugs, conditions),
+  ]);
+
   const majorInteractions = interactions.filter(i => i.severity === 'major');
   const absoluteContraindications = contraindications.filter(c => c.severity === 'absolute');
-  
+
   const safetyScore = calculateSafetyScore(interactions, contraindications);
-  
+
   return {
     safetyScore,
     totalInteractions: interactions.length,

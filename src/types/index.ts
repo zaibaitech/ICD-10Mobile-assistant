@@ -36,6 +36,7 @@ export interface SuggestedCode {
   code: string;
   short_title: string;
   confidence?: 'high' | 'medium' | 'low';
+  reasoning?: string; // AI-generated clinical reasoning
 }
 
 export interface AssistantContext {

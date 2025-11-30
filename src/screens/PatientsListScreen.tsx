@@ -9,15 +9,19 @@ import {
   Alert,
   TextInput,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PatientCard } from '../components/PatientCard';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
 import { getPatients, createPatient } from '../services/patients';
 import { Patient, PatientInput, PatientsStackParamList, Sex } from '../types';
 import { useBottomSpacing } from '../hooks/useBottomSpacing';
 import { ScreenContainer } from '../components/ScreenContainer';
+import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../constants/theme';
 
 type NavigationProp = NativeStackNavigationProp<PatientsStackParamList, 'PatientsList'>;
 
@@ -91,11 +95,7 @@ export const PatientsListScreen: React.FC = () => {
   );
 
   if (loading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
+    return <LoadingState message="Loading patients..." />;
   }
 
   return (
@@ -135,40 +135,44 @@ export const PatientsListScreen: React.FC = () => {
       </View>
 
       {errorMessage ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons name="warning" size={48} color="#FF9800" />
-          <Text style={styles.emptyText}>{errorMessage}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={loadPatients}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading patients"
-          >
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <EmptyState
+          icon="warning"
+          title="Unable to load patients"
+          message={errorMessage}
+          actionLabel="Retry"
+          onActionPress={loadPatients}
+          iconColor={Colors.warning}
+        />
       ) : patients.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons name="people-outline" size={64} color="#CCC" />
-          <Text style={styles.emptyText}>No patients yet</Text>
-          <Text style={styles.emptySubtext}>Tap + to add your first patient</Text>
-        </View>
+        <EmptyState
+          icon="people-outline"
+          title="No patients yet"
+          message="Get started by adding your first patient"
+          actionLabel="Add Patient"
+          onActionPress={() => setModalVisible(true)}
+          iconColor={Colors.primary}
+        />
       ) : (
         <FlatList
           data={filteredPatients}
           renderItem={renderPatient}
           keyExtractor={(item) => item.id}
           contentContainerStyle={[styles.list, { paddingBottom: bottomPadding }]}
-          refreshing={loading}
-          onRefresh={loadPatients}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={loadPatients}
+              tintColor={Colors.primary}
+              colors={[Colors.primary]}
+            />
+          }
           ListEmptyComponent={() => (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="search" size={48} color="#CCC" />
-              <Text style={styles.emptyText}>No matches found</Text>
-              <Text style={styles.emptySubtext}>
-                Try a different name or clear the search
-              </Text>
-            </View>
+            <EmptyState
+              icon="search"
+              title="No matches found"
+              message="Try a different search term or clear the search"
+              iconColor={Colors.textTertiary}
+            />
           )}
         />
       )}
@@ -266,7 +270,7 @@ export const PatientsListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   centerContainer: {
     flex: 1,
@@ -277,158 +281,139 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
+    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.border,
+    ...Shadows.small,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#333',
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#007AFF',
+    width: 48,
+    height: 48,
+    borderRadius: BorderRadius.round,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    ...Shadows.medium,
   },
   list: {
-    paddingVertical: 8,
+    paddingVertical: Spacing.sm,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginHorizontal: 16,
-    marginBottom: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 10,
+    gap: Spacing.md,
+    marginHorizontal: Spacing.lg,
+    marginVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#FFFFFF',
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+    ...Shadows.small,
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
-    color: '#333',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#999',
-    marginTop: 16,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#BBB',
-    marginTop: 8,
-  },
-  retryButton: {
-    marginTop: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: '#007AFF',
-  },
-  retryButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+    fontSize: Typography.fontSize.base,
+    color: Colors.textPrimary,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xxl,
     width: '90%',
     maxWidth: 400,
+    ...Shadows.large,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 20,
-    color: '#333',
+    fontSize: Typography.fontSize.xxl,
+    fontWeight: Typography.fontWeight.bold,
+    marginBottom: Spacing.xl,
+    color: Colors.textPrimary,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 6,
-    marginTop: 12,
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.md,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#F9F9F9',
+    borderColor: Colors.border,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    fontSize: Typography.fontSize.base,
+    backgroundColor: Colors.background,
+    color: Colors.textPrimary,
   },
   sexButtons: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 6,
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   sexButton: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: '#DDD',
-    backgroundColor: '#F9F9F9',
+    borderColor: Colors.border,
+    backgroundColor: Colors.background,
     alignItems: 'center',
   },
   sexButtonActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   sexButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#666',
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textSecondary,
   },
   sexButtonTextActive: {
-    color: '#FFFFFF',
+    color: Colors.textOnPrimary,
   },
   modalButtons: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
+    gap: Spacing.md,
+    marginTop: Spacing.xxl,
   },
   modalButton: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: Spacing.lg,
+    borderRadius: BorderRadius.md,
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: Colors.background,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textSecondary,
   },
   createButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.primary,
+    ...Shadows.medium,
   },
   createButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.textOnPrimary,
   },
 });

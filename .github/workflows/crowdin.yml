@@ -1,0 +1,83 @@
+name: Crowdin Translation Sync
+
+on:
+  # Run when English source file changes
+  push:
+    branches: [main]
+    paths:
+      - 'src/i18n/locales/en.json'
+  
+  # Run weekly to pull new translations
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight UTC
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  sync-translations:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Crowdin Action
+        uses: crowdin/github-action@v1
+        with:
+          # Upload English source file when changed
+          upload_sources: true
+          
+          # Don't upload existing translations (managed in Crowdin)
+          upload_translations: false
+          
+          # Download new/updated translations from Crowdin
+          download_translations: true
+          
+          # Create a pull request with new translations
+          create_pull_request: true
+          
+          # Pull request configuration
+          pull_request_title: 'chore: update translations from Crowdin'
+          pull_request_body: |
+            This PR contains updated translations from Crowdin.
+            
+            ## Changes
+            - Updated translation files from Crowdin community
+            - Reviewed and approved translations
+            
+            ## Languages Updated
+            - Spanish (es)
+            - French (fr)
+            - Portuguese (pt)
+            - Hindi (hi)
+            - Swahili (sw)
+            - Arabic (ar)
+            
+            Please review the changes and merge if everything looks correct.
+          
+          pull_request_labels: 'i18n, translations, automated'
+          
+          # Branch name for PR
+          pull_request_branch_name: 'crowdin-translations'
+          
+          # Configuration file
+          config: 'crowdin.yml'
+          
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Translation Summary
+        if: success()
+        run: |
+          echo "✅ Translations synced successfully!"
+          echo "Check for new pull request with translation updates."

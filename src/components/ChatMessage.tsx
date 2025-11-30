@@ -42,6 +42,9 @@ export const ChatMessage: React.FC<Props> = ({ message, onAddCode }) => {
                       {code.confidence}
                     </Text>
                   )}
+                  {code.reasoning && (
+                    <Text style={styles.reasoning}>{code.reasoning}</Text>
+                  )}
                 </View>
                 {onAddCode && (
                   <TouchableOpacity
@@ -159,6 +162,12 @@ const styles = StyleSheet.create({
   },
   confidence_low: {
     color: '#DC3545',
+  },
+  reasoning: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+    fontStyle: 'italic',
   },
   addButton: {
     backgroundColor: '#007AFF',

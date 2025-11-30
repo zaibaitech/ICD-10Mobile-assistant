@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { SurfaceCard } from '../components/SurfaceCard';
 import { CameraCapture } from '../components/CameraCapture';
@@ -84,17 +85,56 @@ export function DocumentScannerScreen() {
         </Text>
       </View>
 
-      {/* Scan Button */}
-      <TouchableOpacity
-        style={styles.scanButton}
-        onPress={() => setCameraVisible(true)}
-        disabled={processing}
-      >
-        <Ionicons name="camera" size={48} color="#fff" />
-        <Text style={styles.scanButtonText}>
-          {processing ? 'Processing...' : 'Scan Document'}
-        </Text>
-      </TouchableOpacity>
+      {/* Scan Buttons */}
+      <View style={styles.scanButtonsContainer}>
+        <TouchableOpacity
+          style={[styles.scanButton, { flex: 1, marginRight: Spacing.sm }]}
+          onPress={() => setCameraVisible(true)}
+          disabled={processing}
+        >
+          <Ionicons name="camera" size={32} color="#fff" />
+          <Text style={styles.scanButtonText}>
+            {processing ? 'Processing...' : 'Camera'}
+          </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.scanButton, styles.galleryButton, { flex: 1, marginLeft: Spacing.sm }]}
+          onPress={async () => {
+            try {
+              // Request media library permissions
+              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              
+              if (status !== 'granted') {
+                Alert.alert(
+                  'Permission Required',
+                  'Please allow access to your photo library to select images.',
+                  [{ text: 'OK' }]
+                );
+                return;
+              }
+
+              // Quick gallery access
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                quality: 0.8,
+              });
+              
+              if (!result.canceled && result.assets[0]) {
+                handleCapture(result.assets[0].uri);
+              }
+            } catch (error) {
+              console.error('Error picking image:', error);
+              Alert.alert('Error', 'Failed to access photo library');
+            }
+          }}
+          disabled={processing}
+        >
+          <Ionicons name="images" size={32} color="#fff" />
+          <Text style={styles.scanButtonText}>Gallery</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Processing Indicator */}
       {processing && (
@@ -189,7 +229,7 @@ export function DocumentScannerScreen() {
               style={styles.actionButton}
               onPress={() => setCameraVisible(true)}
             >
-              <Ionicons name="refresh" size={20} color={Colors.primary} />
+              <Ionicons name="camera" size={20} color={Colors.primary} />
               <Text style={styles.actionButtonText}>Scan Another</Text>
             </TouchableOpacity>
           </View>
@@ -254,19 +294,30 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.md,
     color: Colors.textSecondary,
   },
+  scanButtonsContainer: {
+    flexDirection: 'row',
+    marginBottom: Spacing.xl,
+  },
   scanButton: {
     backgroundColor: Colors.primary,
     borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.xl,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.xl,
   },
   scanButtonText: {
     fontSize: Typography.fontSize.lg,
     fontWeight: '600',
     color: '#fff',
     marginTop: Spacing.sm,
+  },
+  scanButtonSubtext: {
+    fontSize: Typography.fontSize.sm,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: Spacing.xs,
+  },
+  galleryButton: {
+    backgroundColor: Colors.secondary,
   },
   processingCard: {
     alignItems: 'center',

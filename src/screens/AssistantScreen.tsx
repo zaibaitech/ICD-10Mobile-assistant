@@ -63,15 +63,19 @@ export const AssistantScreen: React.FC = () => {
     }
   }, [visitCodes, messages]);
 
-  const handleSendMessage = async (text: string) => {
-    if (!text.trim() || !user) return;
+  const handleSendMessage = async (text: string, imageUri?: string) => {
+    if (!text.trim() && !imageUri) return;
+    if (!user) return;
 
     let imageUrl: string | undefined;
 
-    // Upload pending image if exists
-    if (pendingImage) {
+    // Use provided imageUri or pending image
+    const imageToUpload = imageUri || pendingImage;
+    
+    if (imageToUpload) {
+      setPendingImage(imageToUpload);
       try {
-        imageUrl = await uploadImage(pendingImage, user.id);
+        imageUrl = await uploadImage(imageToUpload, user.id);
         setPendingImage(null);
       } catch (error) {
         console.error('Error uploading image:', error);
@@ -139,6 +143,14 @@ export const AssistantScreen: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleVoiceRecordingStart = () => {
+    setIsRecording(true);
+  };
+
+  const handleVoiceRecordingStop = () => {
+    setIsRecording(false);
   };
 
   const handleVoiceRecording = async (audioUri: string) => {
@@ -259,7 +271,11 @@ export const AssistantScreen: React.FC = () => {
       {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={Colors.primary} />
-          <Text style={styles.loadingText}>{t('assistant.thinking')}</Text>
+          <Text style={styles.loadingText}>
+            {pendingImage ? '🔍 Analyzing image...' : 
+             isRecording ? '🎤 Processing voice...' : 
+             '🧠 AI thinking...'}
+          </Text>
         </View>
       )}
 
@@ -267,6 +283,8 @@ export const AssistantScreen: React.FC = () => {
         onSend={handleSendMessage}
         onImageSelected={setPendingImage}
         onVoiceRecordingComplete={handleVoiceRecording}
+        onVoiceRecordingStart={handleVoiceRecordingStart}
+        onVoiceRecordingStop={handleVoiceRecordingStop}
         isLoading={isLoading}
         isRecording={isRecording}
         placeholder={t('assistant.inputPlaceholder')}

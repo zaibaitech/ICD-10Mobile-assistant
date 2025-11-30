@@ -6,10 +6,13 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { SearchBar } from '../components/SearchBar';
 import { ChapterFilter } from '../components/ChapterFilter';
 import { Icd10ListItem } from '../components/Icd10ListItem';
+import { EmptyState } from '../components/EmptyState';
+import { LoadingState } from '../components/LoadingState';
 import { searchIcd10Codes, getCommonCodes } from '../services/icd10-api';
 import { Icd10Code } from '../types';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -18,6 +21,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainTabParamList, SearchStackParamList } from '../types';
 import { useBottomSpacing } from '../hooks/useBottomSpacing';
 import { ScreenContainer } from '../components/ScreenContainer';
+import { Colors, Spacing, Typography, BorderRadius, Shadows } from '../constants/theme';
 
 type Icd10SearchScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<SearchStackParamList, 'Icd10Search'>,
@@ -133,22 +137,23 @@ export const Icd10SearchScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       {loading ? (
-        <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#3498db" />
-        </View>
+        <LoadingState message="Searching ICD-10 codes..." />
       ) : errorMessage ? (
-        <View style={styles.centerContent}>
-          <Text style={styles.emptyText}>{errorMessage}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={performSearch}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
+        <EmptyState
+          icon="cloud-offline"
+          title="Search failed"
+          message={errorMessage}
+          actionLabel="Try Again"
+          onActionPress={performSearch}
+          iconColor={Colors.danger}
+        />
       ) : results.length === 0 ? (
-        <View style={styles.centerContent}>
-          <Text style={styles.emptyText}>
-            {hasSearched ? 'No codes found' : 'Enter a search term or browse all codes'}
-          </Text>
-        </View>
+        <EmptyState
+          icon={hasSearched ? 'search' : 'document-text'}
+          title={hasSearched ? 'No codes found' : 'Ready to search'}
+          message={hasSearched ? 'Try adjusting your search terms or filter' : 'Enter a search term to find ICD-10 codes'}
+          iconColor={Colors.primary}
+        />
       ) : (
         <FlatList
           data={results}
@@ -158,6 +163,14 @@ export const Icd10SearchScreen: React.FC<Props> = ({ navigation }) => {
           )}
           style={styles.list}
           contentContainerStyle={{ paddingBottom: bottomPadding }}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={hasSearched ? performSearch : loadInitialCodes}
+              tintColor={Colors.primary}
+              colors={[Colors.primary]}
+            />
+          }
         />
       )}
       </View>
@@ -168,50 +181,29 @@ export const Icd10SearchScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.background,
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: Colors.background,
   },
   header: {
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: Colors.surface,
+    padding: Spacing.xl,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: Colors.border,
+    ...Shadows.small,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 15,
+    fontSize: Typography.fontSize.heading,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.lg,
   },
   searchContainer: {
     marginBottom: 0,
   },
   list: {
     flex: 1,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 16,
-    backgroundColor: '#3498db',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontWeight: '600',
   },
 });

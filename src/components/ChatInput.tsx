@@ -9,6 +9,8 @@ interface Props {
   onSend: (text: string) => void;
   onImageSelected?: (imageUri: string) => void;
   onVoiceRecordingComplete?: (audioUri: string) => void;
+  onVoiceRecordingStart?: () => void;
+  onVoiceRecordingStop?: () => void;
   isRecording?: boolean;
   isLoading?: boolean;
   placeholder?: string;
@@ -19,6 +21,8 @@ export const ChatInput: React.FC<Props> = ({
   onSend,
   onImageSelected,
   onVoiceRecordingComplete,
+  onVoiceRecordingStart,
+  onVoiceRecordingStop,
   isRecording = false,
   isLoading = false,
   placeholder,
@@ -49,7 +53,7 @@ export const ChatInput: React.FC<Props> = ({
 
       // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -150,6 +154,8 @@ export const ChatInput: React.FC<Props> = ({
       {onVoiceRecordingComplete && (
         <VoiceRecordButton
           onRecordingComplete={onVoiceRecordingComplete}
+          onRecordingStart={onVoiceRecordingStart}
+          onRecordingStop={onVoiceRecordingStop}
           isDisabled={isLoading}
         />
       )}

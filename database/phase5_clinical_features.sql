@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS drug_interactions (
   description TEXT NOT NULL,
   mechanism TEXT,
   recommendation TEXT NOT NULL,
-  references TEXT[],
+  reference_sources TEXT[],
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -185,7 +185,7 @@ ON CONFLICT DO NOTHING;
 -- SEED DATA: DRUG INTERACTIONS
 -- ============================================
 
-INSERT INTO drug_interactions (drug1_name, drug2_name, severity, description, mechanism, recommendation, references) VALUES
+INSERT INTO drug_interactions (drug1_name, drug2_name, severity, description, mechanism, recommendation, reference_sources) VALUES
 -- Major interactions
 ('Warfarin', 'Aspirin', 'major', 'Increased risk of bleeding when combining anticoagulants with antiplatelet agents.', 'Additive antiplatelet and anticoagulant effects', 'Monitor INR closely. Consider alternative antiplatelet if possible. Watch for signs of bleeding.', ARRAY['FDA Drug Safety Communication', 'UpToDate 2025']),
 ('Warfarin', 'Ibuprofen', 'major', 'NSAIDs can increase bleeding risk and reduce anticoagulant effectiveness.', 'Platelet inhibition and GI irritation', 'Avoid concurrent use. Use acetaminophen for pain if needed. If necessary, use lowest NSAID dose for shortest duration.', ARRAY['American College of Cardiology Guidelines']),

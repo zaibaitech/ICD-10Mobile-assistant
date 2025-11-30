@@ -5,6 +5,7 @@
 [![Status](https://img.shields.io/badge/status-beta-yellow)](https://github.com/zaibaitech/ICD-10Mobile-assistant)
 [![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-blue)](https://expo.dev)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Translations](https://img.shields.io/badge/translations-7%20languages-brightgreen)](#-localization)
 
 ## 🎯 What This App Does
 
@@ -47,7 +48,22 @@ ICD-10 Mobile Assistant helps healthcare workers quickly find and document diagn
 - Persistent sessions
 - Row-level security for user data
 
+### 🌍 Localization
+- **7 languages supported**:
+  - 🇬🇧 English (en) - 141 strings ✅
+  - 🇪🇸 Spanish (es) - 141 strings ✅
+  - 🇫🇷 French (fr) - 141 strings ✅
+  - 🇵🇹 Portuguese (pt) - 55 strings (39%)
+  - 🇮🇳 Hindi (hi) - 55 strings (39%)
+  - 🇹🇿 Swahili (sw) - 55 strings (39%)
+  - 🇸🇦 Arabic (ar) - 55 strings (39%)
+- **Crowdin integration** for community translations
+- Check coverage: `npm run i18n:check`
+- See [CROWDIN_SETUP.md](CROWDIN_SETUP.md) for details
+
 ## ⚠️ What's Mock/Incomplete
+
+**See**: [MOCK_VS_REAL_QUICK_REFERENCE.md](MOCK_VS_REAL_QUICK_REFERENCE.md) for visual guide
 
 ### 🤖 AI Assistant (Keyword Matching Only)
 **Status**: Basic keyword matching, NOT real AI
@@ -155,7 +171,8 @@ ICD-10Mobile-assistant/
 - **ICD-10 Data**: NIH Clinical Tables API (free, public)
 - **Navigation**: React Navigation 7
 - **Caching**: AsyncStorage (7-day TTL)
-- **i18n**: react-i18next (EN, FR, ES)
+- **i18n**: react-i18next (7 languages)
+- **Translations**: Crowdin (community-powered)
 
 ## 📊 Honest Status Report
 
@@ -185,18 +202,41 @@ ICD-10Mobile-assistant/
 
 ## 📄 Documentation
 
-- [HONEST_AUDIT_REPORT.md](HONEST_AUDIT_REPORT.md) - Reality check (65% vs claimed 100%)
+### Getting Started
+- [START_HERE.md](START_HERE.md) - Quick start guide
+- [INSTALLATION.md](INSTALLATION.md) - Setup instructions
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Production deployment
+
+### Features & Implementation
+- [PHASE5_README.md](PHASE5_README.md) - Latest clinical features (Drug interactions, Lab results)
 - [ICD10_DATABASE_SOLUTION.md](ICD10_DATABASE_SOLUTION.md) - NIH API implementation
 - [STORAGE_BUCKET_SETUP.md](STORAGE_BUCKET_SETUP.md) - Image upload guide
-- [START_HERE.md](START_HERE.md) - Original overview
+
+### Mock Data & Upgrades
+- [MOCK_VS_REAL_QUICK_REFERENCE.md](MOCK_VS_REAL_QUICK_REFERENCE.md) - **What's mock, what's real**
+- [MOCK_DATA_REPLACEMENT_GUIDE.md](MOCK_DATA_REPLACEMENT_GUIDE.md) - **How to replace mock with real APIs**
+- [AI_SETUP_GUIDE.md](AI_SETUP_GUIDE.md) - Enable real AI features
+
+### Translations
+- [CROWDIN_SETUP.md](CROWDIN_SETUP.md) - Translation management setup
+- [CROWDIN_QUICK_REFERENCE.md](CROWDIN_QUICK_REFERENCE.md) - Translation workflow
+- [CONTRIBUTING_TRANSLATIONS.md](CONTRIBUTING_TRANSLATIONS.md) - Help translate
+
+### Status Reports
+- [HONEST_AUDIT_REPORT.md](HONEST_AUDIT_REPORT.md) - Reality check (65% vs claimed 100%)
+- [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) - Feature completion tracking
 
 ## 🤝 Contributing
 
 This is a learning project. Contributions welcome for:
+- Translations (via [Crowdin](CROWDIN_SETUP.md))
 - Real AI integration (OpenAI/Claude)
 - Production EHR testing
 - Additional disease modules
 - UI/UX improvements
+
+### Translation Contributors
+Help translate into your language! See [CROWDIN_SETUP.md](CROWDIN_SETUP.md) to get started.
 
 ## 📝 License
 
