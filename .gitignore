@@ -11,6 +11,10 @@ node_modules
 mcp-server/.env
 api/.env
 
+# MCP configuration with secrets
+mcp-server/mcp-config.json
+mcp-config.json
+
 # VS Code settings with credentials (use .vscode/settings.local.json instead)
 .vscode/settings.local.json
 .vscode/*.local.json

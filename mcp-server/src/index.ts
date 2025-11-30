@@ -14,16 +14,25 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Prefer ANON key for better security (uses RLS), fall back to SERVICE_ROLE key if needed
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('Error: Missing required environment variables');
-  console.error('Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env file');
+  console.error('Please set SUPABASE_URL and either SUPABASE_ANON_KEY or SUPABASE_SERVICE_ROLE_KEY in .env file');
+  console.error('Recommended: Use SUPABASE_ANON_KEY for better security with Row Level Security');
   process.exit(1);
 }
 
 // Initialize Supabase client
-const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Log which key type is being used (without exposing the actual key)
+if (process.env.SUPABASE_ANON_KEY) {
+  console.error('✅ Using ANON key (secure - RLS enabled)');
+} else {
+  console.error('⚠️  Using SERVICE_ROLE key (admin access - bypasses RLS)');
+}
 
 // Define available tools
 const TOOLS: Tool[] = [
