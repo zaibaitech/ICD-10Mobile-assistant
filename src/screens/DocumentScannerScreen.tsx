@@ -3,7 +3,7 @@
  * Scan medical documents and extract ICD-10 codes via OCR
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { useAuth } from '../context/AuthContext';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { SurfaceCard } from '../components/SurfaceCard';
 import { CameraCapture } from '../components/CameraCapture';
@@ -25,6 +26,7 @@ import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
 export function DocumentScannerScreen() {
   const navigation = useNavigation();
+  const { profile, hasPermission } = useAuth();
   const bottomPadding = useBottomSpacing();
   
   const [cameraVisible, setCameraVisible] = useState(false);
@@ -36,6 +38,47 @@ export function DocumentScannerScreen() {
     medicalTerms: string[];
     confidence: number;
   } | null>(null);
+
+  // Check permission on mount
+  useEffect(() => {
+    if (!hasPermission('image_processing')) {
+      Alert.alert(
+        'Access Restricted',
+        'Medical image processing is only available for doctors. This feature requires clinical diagnostic authority.',
+        [
+          { 
+            text: 'Go Back', 
+            onPress: () => navigation.goBack(),
+            style: 'cancel'
+          }
+        ]
+      );
+    }
+  }, [hasPermission]);
+
+  // Don't render if user doesn't have permission
+  if (!hasPermission('image_processing')) {
+    return (
+      <ScreenContainer style={styles.restrictedContainer}>
+        <View style={styles.restrictedContent}>
+          <Ionicons name="lock-closed" size={64} color={Colors.textTertiary} />
+          <Text style={styles.restrictedTitle}>Feature Restricted</Text>
+          <Text style={styles.restrictedText}>
+            Medical image processing is only available for doctors.
+          </Text>
+          <Text style={styles.restrictedSubtext}>
+            Your role: {profile?.role || 'Unknown'}
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>← Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   const handleCapture = async (imageUri: string) => {
     setProcessing(true);
@@ -463,5 +506,47 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.md,
     color: Colors.textSecondary,
     flex: 1,
+  },
+  restrictedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+  },
+  restrictedContent: {
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    maxWidth: 400,
+  },
+  restrictedTitle: {
+    fontSize: Typography.fontSize.xxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
+  },
+  restrictedText: {
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xs,
+  },
+  restrictedSubtext: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textTertiary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
+  backButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
   },
 });

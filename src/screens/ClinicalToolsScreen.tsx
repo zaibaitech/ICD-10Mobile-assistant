@@ -3,7 +3,7 @@
  * Access drug interactions checker and lab results interpreter
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../context/AuthContext';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { SurfaceCard } from '../components/SurfaceCard';
 import { Colors, Spacing, BorderRadius, Typography } from '../constants/theme';
@@ -36,6 +38,8 @@ import {
 type ToolMode = 'drug' | 'lab';
 
 export function ClinicalToolsScreen() {
+  const navigation = useNavigation();
+  const { profile, hasPermission } = useAuth();
   const bottomPadding = useBottomSpacing();
   const [mode, setMode] = useState<ToolMode>('drug');
   
@@ -52,6 +56,47 @@ export function ClinicalToolsScreen() {
   const [newLabValue, setNewLabValue] = useState('');
   const [newLabUnit, setNewLabUnit] = useState('');
   const [labInterpretations, setLabInterpretations] = useState<ReturnType<typeof interpretLabPanel> | null>(null);
+
+  // Check permission on mount
+  useEffect(() => {
+    if (profile?.role !== 'doctor') {
+      Alert.alert(
+        'Access Restricted',
+        'Clinical decision tools are only available for doctors. These tools require medical diagnostic authority.',
+        [
+          { 
+            text: 'Go Back', 
+            onPress: () => (navigation as any).goBack(),
+            style: 'cancel'
+          }
+        ]
+      );
+    }
+  }, [profile]);
+
+  // Don't render if user isn't a doctor
+  if (profile?.role !== 'doctor') {
+    return (
+      <ScreenContainer style={styles.restrictedContainer}>
+        <View style={styles.restrictedContent}>
+          <Ionicons name="medical" size={64} color={Colors.textTertiary} />
+          <Text style={styles.restrictedTitle}>Clinical Tools</Text>
+          <Text style={styles.restrictedText}>
+            Drug interaction checker and lab result interpreter are only available for doctors.
+          </Text>
+          <Text style={styles.restrictedSubtext}>
+            Your role: {profile?.role || 'Unknown'}
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => (navigation as any).goBack()}
+          >
+            <Text style={styles.backButtonText}>← Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   // Drug checker functions
   const addDrug = () => {
@@ -759,5 +804,47 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
     marginLeft: Spacing.xs,
+  },
+  restrictedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+  },
+  restrictedContent: {
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+    maxWidth: 400,
+  },
+  restrictedTitle: {
+    fontSize: Typography.fontSize.xxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.textPrimary,
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
+  },
+  restrictedText: {
+    fontSize: Typography.fontSize.base,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xs,
+  },
+  restrictedSubtext: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textTertiary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
+  backButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { saveLanguage } from '../i18n';
@@ -34,7 +34,7 @@ export const ProfileScreen: React.FC = () => {
         <Text style={styles.title}>{t('profile.title')}</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <View style={styles.infoSection}>
           <Text style={styles.label}>{t('auth.email')}</Text>
           <Text style={styles.value}>{user?.email || 'Not available'}</Text>
@@ -124,7 +124,7 @@ export const ProfileScreen: React.FC = () => {
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <Text style={styles.signOutButtonText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -147,7 +147,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  contentContainer: {
     padding: 20,
+    paddingBottom: 40,
   },
   infoSection: {
     backgroundColor: '#fff',

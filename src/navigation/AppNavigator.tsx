@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { RootStackParamList, MainTabParamList, SearchStackParamList, FavoritesStackParamList, PatientsStackParamList } from '../types';
+import { RootStackParamList, MainTabParamList, SearchStackParamList, FavoritesStackParamList, PatientsStackParamList, NursingStackParamList } from '../types';
 
 // Auth Screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -32,11 +32,22 @@ import { EncounterDetailScreen } from '../screens/EncounterDetailScreen';
 import { DocumentScannerScreen } from '../screens/DocumentScannerScreen';
 import { ClinicalToolsScreen } from '../screens/ClinicalToolsScreen';
 
+// Nursing Module Screens (Phase 6)
+import { 
+  NursingHomeScreen,
+  NandaSearchScreen,
+  NandaDetailScreen,
+  CarePlanBuilderScreen,
+  CarePlanListScreen,
+  SbarGeneratorScreen
+} from '../screens/nursing';
+
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const SearchStack = createNativeStackNavigator<SearchStackParamList>();
 const FavoritesStack = createNativeStackNavigator<FavoritesStackParamList>();
 const PatientsStack = createNativeStackNavigator<PatientsStackParamList>();
+const NursingStack = createNativeStackNavigator<NursingStackParamList>();
 
 // Search Stack Navigator
 const SearchNavigator = () => {
@@ -102,6 +113,44 @@ const PatientsNavigator = () => {
   );
 };
 
+// Nursing Stack Navigator (Phase 6)
+const NursingNavigator = () => {
+  return (
+    <NursingStack.Navigator>
+      <NursingStack.Screen
+        name="NursingHome"
+        component={NursingHomeScreen}
+        options={{ title: 'Nursing Care', headerShown: false }}
+      />
+      <NursingStack.Screen
+        name="NandaSearch"
+        component={NandaSearchScreen}
+        options={{ title: 'Search NANDA' }}
+      />
+      <NursingStack.Screen
+        name="NandaDetail"
+        component={NandaDetailScreen}
+        options={{ title: 'NANDA Diagnosis' }}
+      />
+      <NursingStack.Screen
+        name="CarePlanList"
+        component={CarePlanListScreen}
+        options={{ title: 'Care Plans' }}
+      />
+      <NursingStack.Screen
+        name="CarePlanBuilder"
+        component={CarePlanBuilderScreen}
+        options={{ title: 'Build Care Plan' }}
+      />
+      <NursingStack.Screen
+        name="SbarGenerator"
+        component={SbarGeneratorScreen}
+        options={{ title: 'SBAR Report' }}
+      />
+    </NursingStack.Navigator>
+  );
+};
+
 // Main Tab Navigator (authenticated users)
 type TabIconName =
   | 'grid'
@@ -116,12 +165,21 @@ type TabIconName =
   | 'medical-outline'
   | 'document-text'
   | 'document-text-outline'
+  | 'clipboard'
+  | 'clipboard-outline'
   | 'help-outline';
 
 const MainTabNavigator = () => {
   const insets = useSafeAreaInsets();
+  const { profile, hasPermission } = useAuth();
   const baseHeight = 65;
   const safePadding = Math.max(insets.bottom, 12);
+  
+  // Determine which tabs to show based on user role
+  const userRole = profile?.role || 'other';
+  const showNursing = hasPermission('nursing_care_plans');
+  const showPatients = hasPermission('patient_management');
+  const showClinicalTools = userRole === 'doctor';
 
   return (
     <Tab.Navigator
@@ -137,10 +195,14 @@ const MainTabNavigator = () => {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
           } else if (route.name === 'Patients') {
             iconName = focused ? 'people' : 'people-outline';
+          } else if (route.name === 'Nursing') {
+            iconName = focused ? 'clipboard' : 'clipboard-outline';
           } else if (route.name === 'Modules') {
             iconName = focused ? 'medical' : 'medical-outline';
           } else if (route.name === 'Visit') {
             iconName = focused ? 'document-text' : 'document-text-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
           } else {
             iconName = 'help-outline';
           }
@@ -173,35 +235,66 @@ const MainTabNavigator = () => {
         headerShown: false,
       })}
     >
+      {/* Home - Always visible */}
       <Tab.Screen 
         name="Dashboard" 
         component={DashboardScreen}
         options={{ tabBarLabel: 'Home' }}
       />
+      
+      {/* ICD-10 Search - Always visible */}
       <Tab.Screen 
         name="Search" 
         component={SearchNavigator}
         options={{ tabBarLabel: 'ICD-10' }}
       />
+      
+      {/* AI Assistant - Always visible */}
       <Tab.Screen 
         name="Assistant" 
         component={AssistantScreen}
         options={{ tabBarLabel: 'AI' }}
       />
-      <Tab.Screen 
-        name="Patients" 
-        component={PatientsNavigator}
-        options={{ tabBarLabel: 'Patients' }}
-      />
+      
+      {/* Patients - For doctors, nurses, CHWs */}
+      {showPatients && (
+        <Tab.Screen 
+          name="Patients" 
+          component={PatientsNavigator}
+          options={{ tabBarLabel: 'Patients' }}
+        />
+      )}
+      
+      {/* Nursing - Only for nurses and doctors */}
+      {showNursing && (
+        <Tab.Screen 
+          name="Nursing" 
+          component={NursingNavigator}
+          options={{ tabBarLabel: 'Nursing' }}
+        />
+      )}
+      
+      {/* Disease Modules - Always visible */}
       <Tab.Screen 
         name="Modules" 
         component={DiseaseModulesScreen}
         options={{ tabBarLabel: 'Guides' }}
       />
+      
+      {/* Visit Notes - For doctors and nurses */}
+      {(userRole === 'doctor' || userRole === 'nurse' || userRole === 'chw') && (
+        <Tab.Screen 
+          name="Visit" 
+          component={VisitNoteScreen}
+          options={{ tabBarLabel: 'Visit' }}
+        />
+      )}
+      
+      {/* Profile - Always visible */}
       <Tab.Screen 
-        name="Visit" 
-        component={VisitNoteScreen}
-        options={{ tabBarLabel: 'Visit' }}
+        name="Profile" 
+        component={ProfileScreen}
+        options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>
   );

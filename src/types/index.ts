@@ -263,6 +263,7 @@ export type MainTabParamList = {
   Search: undefined; // ICD-10 search
   Assistant: undefined; // AI Assistant
   Patients: undefined; // Patient management
+  Nursing: undefined; // Nursing care plans
   Modules: undefined; // Disease modules
   Visit: undefined; // Visit notes
   Profile: undefined;
@@ -283,5 +284,14 @@ export type SearchStackParamList = {
 export type FavoritesStackParamList = {
   FavoritesList: undefined;
   Icd10Detail: { code: Icd10Code };
+};
+
+export type NursingStackParamList = {
+  NursingHome: undefined;
+  NandaSearch: undefined;
+  NandaDetail: { nandaId: string };
+  CarePlanList: { patientId?: string; encounterId?: string };
+  CarePlanBuilder: { patientId?: string; encounterId?: string; icd10Codes?: string[] };
+  SbarGenerator: { patientId?: string; encounterId?: string; reportType?: string };
 };
 

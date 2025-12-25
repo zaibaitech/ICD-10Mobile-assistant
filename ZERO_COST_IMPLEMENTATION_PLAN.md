@@ -366,10 +366,9 @@
 - [x] Database connection verified - ✅ Working
 - [x] Offline-first architecture - ✅ Native + Web support
 - [x] Platform-specific implementations - ✅ SQLite (native) + IndexedDB (web)
-- [x] Spanish translation complete - ✅ 176 strings translated
-- [x] SMS gateway functional - ✅ Webhook ready for deployment
-- [x] 3 disease modules ready - ✅ Malaria, TB, Dengue
-- [x] EHR integration templates - ✅ OpenMRS, DHIS2
+- [ ] Spanish translation complete
+- [ ] SMS gateway functional
+- [ ] 3 disease modules ready
 - [ ] Open-source license (MIT)
 - [ ] GitHub README compelling
 - [ ] Demo video (Loom free tier)

@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getPatientById, calculateAge, deletePatient } from '../services/patients';
-import { getEncountersByPatient } from '../services/encounters';
+import { getEncountersByPatient, getEncounterCodes } from '../services/encounters';
 import { Patient, Encounter, PatientsStackParamList } from '../types';
 import { useBottomSpacing } from '../hooks/useBottomSpacing';
 
@@ -76,6 +76,48 @@ export const PatientDetailScreen: React.FC = () => {
 
   const handleNewEncounter = () => {
     navigation.navigate('EncounterForm', { patientId });
+  };
+
+  const handleCreateCarePlan = async () => {
+    try {
+      // Find the most recent encounter with ICD-10 codes
+      let icd10Codes: string[] = [];
+      let selectedEncounterId: string | undefined;
+
+      if (encounters.length > 0) {
+        // Try to find encounter with codes, starting from most recent
+        for (const encounter of encounters) {
+          const codes = await getEncounterCodes(encounter.id);
+          if (codes.length > 0) {
+            icd10Codes = codes.map(c => c.icd10_codes?.code || '').filter(Boolean);
+            selectedEncounterId = encounter.id;
+            break;
+          }
+        }
+        
+        // If no encounter has codes yet, use the most recent encounter
+        if (!selectedEncounterId && encounters.length > 0) {
+          selectedEncounterId = encounters[0].id;
+        }
+      }
+
+      // Navigate to Nursing stack's Care Plan Builder with patient context
+      (navigation as any).navigate('Nursing', {
+        screen: 'CarePlanBuilder',
+        params: { 
+          patientId,
+          encounterId: selectedEncounterId,
+          icd10Codes: icd10Codes.length > 0 ? icd10Codes : undefined
+        }
+      });
+    } catch (error) {
+      console.error('Error preparing care plan data:', error);
+      // Navigate anyway, even if we couldn't fetch codes
+      (navigation as any).navigate('Nursing', {
+        screen: 'CarePlanBuilder',
+        params: { patientId }
+      });
+    }
   };
 
   const getRiskColor = (level: Encounter['ai_risk_level']) => {
@@ -146,6 +188,28 @@ export const PatientDetailScreen: React.FC = () => {
           <Text style={styles.notesText}>{patient.notes}</Text>
         </SurfaceCard>
       )}
+
+      {/* Nursing Care Actions */}
+      <SurfaceCard style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>Nursing Care</Text>
+        <TouchableOpacity
+          style={styles.nursingButton}
+          onPress={handleCreateCarePlan}
+          accessibilityRole="button"
+          accessibilityLabel="Create care plan"
+        >
+          <View style={styles.nursingButtonContent}>
+            <Ionicons name="medical" size={24} color="#2ecc71" />
+            <View style={styles.nursingButtonText}>
+              <Text style={styles.nursingButtonTitle}>Create Care Plan</Text>
+              <Text style={styles.nursingButtonSubtitle}>
+                Generate NANDA diagnoses from patient conditions
+              </Text>
+            </View>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color="#666" />
+        </TouchableOpacity>
+      </SurfaceCard>
 
       <SurfaceCard style={styles.sectionCard}>
         <View style={styles.sectionHeader}>
@@ -361,5 +425,34 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSize.sm,
     color: Colors.textSecondary,
     fontStyle: 'italic',
+  },
+  nursingButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: Spacing.md,
+    backgroundColor: Colors.background,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: '#2ecc71',
+  },
+  nursingButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  nursingButtonText: {
+    marginLeft: Spacing.md,
+    flex: 1,
+  },
+  nursingButtonTitle: {
+    fontSize: Typography.fontSize.base,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  nursingButtonSubtitle: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.textSecondary,
+    marginTop: 2,
   },
 });

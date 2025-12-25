@@ -29,6 +29,7 @@
     "expo-file-system": "^19.0.19",
     "expo-image-manipulator": "^14.0.7",
     "expo-image-picker": "^17.0.8",
+    "expo-linking": "^8.0.9",
     "expo-localization": "^17.0.7",
     "expo-status-bar": "~3.0.8",
     "i18next": "^25.6.3",

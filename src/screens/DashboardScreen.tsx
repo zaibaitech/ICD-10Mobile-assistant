@@ -75,7 +75,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, value, label, color }) => (
 
 export const DashboardScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, profile, hasPermission } = useAuth();
   const { visitCodes } = useVisitContext();
   const navigation = useNavigation();
   const [todayDate, setTodayDate] = useState('');
@@ -114,7 +114,8 @@ export const DashboardScreen: React.FC = () => {
     return t('dashboard.goodEvening');
   };
 
-  const quickActions = [
+  // Role-based quick actions
+  const getDoctorActions = () => [
     {
       icon: 'search',
       title: t('dashboard.searchCodes'),
@@ -139,7 +140,7 @@ export const DashboardScreen: React.FC = () => {
     {
       icon: 'chatbubbles',
       title: t('dashboard.aiAssistant'),
-      subtitle: t('dashboard.aiAssistantDesc'),
+      subtitle: 'AI-powered clinical analysis',
       onPress: () => navigation.navigate('Assistant' as never),
       color: Colors.accent,
     },
@@ -151,13 +152,95 @@ export const DashboardScreen: React.FC = () => {
       color: '#e74c3c',
     },
     {
-      icon: 'document-text',
-      title: t('dashboard.currentVisit'),
-      subtitle: `${visitCodes.length} ${t('dashboard.codesAdded')}`,
-      onPress: () => navigation.navigate('Visit' as never),
+      icon: 'people',
+      title: 'Patient Management',
+      subtitle: 'View and manage patient records',
+      onPress: () => navigation.navigate('Patients' as never),
+      color: '#34495e',
+    },
+  ];
+
+  const getNurseActions = () => [
+    {
+      icon: 'search',
+      title: 'ICD-10 & NANDA Search',
+      subtitle: 'Medical and nursing diagnoses',
+      onPress: () => navigation.navigate('Search' as never),
+      color: Colors.primary,
+    },
+    {
+      icon: 'medical',
+      title: 'NANDA Diagnoses',
+      subtitle: 'Search nursing diagnoses with NIC/NOC',
+      onPress: () => (navigation as any).navigate('Nursing', { screen: 'NandaSearch' }),
+      color: '#3498db',
+    },
+    {
+      icon: 'create',
+      title: 'Care Plan Builder',
+      subtitle: 'Build care plans from ICD-10 codes',
+      onPress: () => (navigation as any).navigate('Nursing', { screen: 'CarePlanBuilder' }),
+      color: '#2ecc71',
+    },
+    {
+      icon: 'clipboard',
+      title: 'SBAR Report',
+      subtitle: 'Generate handoff reports',
+      onPress: () => (navigation as any).navigate('Nursing', { screen: 'SbarGenerator' }),
+      color: '#e67e22',
+    },
+    {
+      icon: 'list',
+      title: 'Care Plan History',
+      subtitle: 'View patient care plans',
+      onPress: () => (navigation as any).navigate('Nursing', { screen: 'CarePlanList' }),
+      color: '#9b59b6',
+    },
+    {
+      icon: 'people',
+      title: 'Patient Care',
+      subtitle: 'Document and manage patient care',
+      onPress: () => navigation.navigate('Patients' as never),
+      color: '#34495e',
+    },
+  ];
+
+  const getDefaultActions = () => [
+    {
+      icon: 'search',
+      title: t('dashboard.searchCodes'),
+      subtitle: t('dashboard.searchCodesDesc'),
+      onPress: () => navigation.navigate('Search' as never),
+      color: Colors.primary,
+    },
+    {
+      icon: 'chatbubbles',
+      title: t('dashboard.aiAssistant'),
+      subtitle: t('dashboard.aiAssistantDesc'),
+      onPress: () => navigation.navigate('Assistant' as never),
+      color: Colors.accent,
+    },
+    {
+      icon: 'medical',
+      title: 'Disease Modules',
+      subtitle: 'WHO guidelines for common conditions',
+      onPress: () => navigation.navigate('Modules' as never),
+      color: '#e74c3c',
+    },
+    {
+      icon: 'heart',
+      title: 'Favorites',
+      subtitle: 'Your saved ICD-10 codes',
+      onPress: () => navigation.navigate('Favorites' as never),
       color: Colors.danger,
     },
   ];
+
+  // Select actions based on role
+  const quickActions = 
+    profile?.role === 'doctor' ? getDoctorActions() :
+    profile?.role === 'nurse' ? getNurseActions() :
+    getDefaultActions();
 
   return (
     <ScreenContainer
@@ -172,7 +255,21 @@ export const DashboardScreen: React.FC = () => {
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>{getGreeting()}</Text>
-          <Text style={styles.userName}>Dr. {user?.email?.split('@')[0] || 'User'}</Text>
+          <Text style={styles.userName}>
+            {profile?.role === 'doctor' ? 'Dr. ' : 
+             profile?.role === 'nurse' ? 'Nurse ' : ''}
+            {profile?.display_name || user?.email?.split('@')[0] || 'User'}
+          </Text>
+          {profile?.role && (
+            <Text style={styles.roleLabel}>
+              {profile.role === 'doctor' && '👨‍⚕️ Doctor'}
+              {profile.role === 'nurse' && '👩‍⚕️ Nurse'}
+              {profile.role === 'pharmacist' && '💊 Pharmacist'}
+              {profile.role === 'chw' && '🏥 Community Health Worker'}
+              {profile.role === 'student' && '📚 Medical Student'}
+              {profile.specialty && ` - ${profile.specialty}`}
+            </Text>
+          )}
           <Text style={styles.date}>{todayDate}</Text>
         </View>
         <View style={styles.headerActions}>
@@ -270,36 +367,76 @@ export const DashboardScreen: React.FC = () => {
         </TouchableOpacity>
       </Modal>
 
-      {/* Stats Section */}
+      {/* Stats Section - Role-based */}
       <View style={styles.statsSection}>
-        <Text style={styles.sectionTitle}>{t('dashboard.todayOverview')}</Text>
+        <Text style={styles.sectionTitle}>
+          {profile?.role === 'nurse' ? 'Today\'s Care Summary' : t('dashboard.todayOverview')}
+        </Text>
         <View style={styles.statsRow}>
-          <StatCard
-            icon="document-text"
-            value={visitCodes.length}
-            label={t('dashboard.activeCodes')}
-            color={Colors.primary}
-          />
-          <StatCard
-            icon="calendar"
-            value="0"
-            label={t('dashboard.encounters')}
-            color={Colors.secondary}
-          />
+          {profile?.role === 'nurse' ? (
+            <>
+              <StatCard
+                icon="clipboard"
+                value="0"
+                label="Active Care Plans"
+                color="#2ecc71"
+              />
+              <StatCard
+                icon="people"
+                value="0"
+                label="Patients Under Care"
+                color={Colors.accent}
+              />
+            </>
+          ) : (
+            <>
+              <StatCard
+                icon="document-text"
+                value={visitCodes.length}
+                label={t('dashboard.activeCodes')}
+                color={Colors.primary}
+              />
+              <StatCard
+                icon="calendar"
+                value="0"
+                label={t('dashboard.encounters')}
+                color={Colors.secondary}
+              />
+            </>
+          )}
         </View>
         <View style={styles.statsRow}>
-          <StatCard
-            icon="heart"
-            value="0"
-            label={t('dashboard.favorites')}
-            color={Colors.danger}
-          />
-          <StatCard
-            icon="people"
-            value="0"
-            label={t('dashboard.patients')}
-            color={Colors.accent}
-          />
+          {profile?.role === 'nurse' ? (
+            <>
+              <StatCard
+                icon="checkmark-circle"
+                value="0"
+                label="Assessments Today"
+                color="#3498db"
+              />
+              <StatCard
+                icon="chatbubble"
+                value="0"
+                label="SBAR Reports"
+                color="#e67e22"
+              />
+            </>
+          ) : (
+            <>
+              <StatCard
+                icon="heart"
+                value="0"
+                label={t('dashboard.favorites')}
+                color={Colors.danger}
+              />
+              <StatCard
+                icon="people"
+                value="0"
+                label={t('dashboard.patients')}
+                color={Colors.accent}
+              />
+            </>
+          )}
         </View>
       </View>
 
@@ -384,9 +521,16 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     marginBottom: 4,
   },
+  roleLabel: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.primary,
+    marginTop: 2,
+    fontWeight: Typography.fontWeight.medium,
+  },
   date: {
     fontSize: Typography.fontSize.sm,
     color: Colors.textTertiary,
+    marginTop: 4,
   },
   headerActions: {
     flexDirection: 'row',
